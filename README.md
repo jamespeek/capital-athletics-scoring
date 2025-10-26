@@ -2,7 +2,7 @@
 
 ## Setup
 
-Requires PHP 8.4+ and Composer[https://getcomposer.org/].
+Requires PHP 8.4+ and [Composer](https://getcomposer.org/).
 
 ### Composer
 
