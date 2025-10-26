@@ -24,7 +24,7 @@ Number the CSV files sequentially (`1.csv`, `2.csv`, ...).
 
 ## Optional URL parameters
 
-* `comp` Defaults to `hn`; needs to match the data directory name above.
+* `comp` Defaults to `hn`. Needs to match the data directory name above.
 * `verbose` Defaults to `true`. Use to show all working.
 * `club` Defaults to `none`. Use to filter data down to a club rather than all CA clubs, e.g. 'Woden Athletics'.
  
