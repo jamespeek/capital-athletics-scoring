@@ -16,7 +16,7 @@ Create `.env` file with following data:
 
 ### Data files
 
-Note, data isn't included in the repo due to it including names and dates of birth, and also being time dependent.
+Note, data isn't included in the repository due to it including names and dates of birth, and also being time dependent.
 
 CSV data from meet manager goes into `./data/{comp name}` e.g. `/data/hn`.
 
