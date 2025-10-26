@@ -188,6 +188,7 @@ function loadEnv () {
     }
 }
 
+// load meet data from google sheet
 function loadMeetData() {
     global $sheets;
 
@@ -220,6 +221,7 @@ function loadMeetData() {
     return $meetData;
 }
 
+// load clubs data from google sheet
 function loadClubData() {
     global $sheets;
 
