@@ -28,9 +28,16 @@ Number the CSV files sequentially (`1.csv`, `2.csv`, ...).
 
 For champs files, keep the numeric prefix for sort order and suffix the file with either `u9-18` or `u20-open`, for example `8-u20-open.csv` or `9-u9-18.csv`.
 
+## File responsibilities
+
+* `index.php` handles request parameters, coordinates the scoring flow, and outputs the page shell.
+* `utils.php` handles app config, CSV loading, meet and club normalisation, grouping, sorting, and club summary preparation.
+* `scoring.php` handles ACT record lookup, WMA adjustments, points scoring, and event-level scoring logic.
+* `render.php` handles HTML output and tooltip display formatting.
+
 ## Optional URL parameters
 
-* `comp` Defaults to `ss`. It must match the data directory name above.
+* `comp` Defaults to `ss`. It must match a directory inside `data`.
 * `verbose` Defaults to `true`. Use it to show the per-athlete working as well as the summary tables.
 * `club` Defaults to `none`. Use it to filter results down to a single club, for example `Woden Athletics`.
  
