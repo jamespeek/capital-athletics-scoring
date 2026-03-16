@@ -35,6 +35,13 @@ li li:not(:has(button)) {
     opacity: 0.3;
 }
 
+.missing-record-badge {
+    margin-left: 10px;
+    background: gold;
+    border-radius: 3px;
+    padding: 1px 3px;
+}
+
 .athlete:not(:has(button)) {
     display: none;
 }

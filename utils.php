@@ -19,7 +19,8 @@ function appConfig() {
 
     $config = [
         'score_base' => 800,
-        'excluded_events' => ['60m', '60m Hurdles', '70m', '300m', '600m', '1 mile', '700m Walk', '1100m Walk', '2000m'],
+        'official_points' => 20,
+        'excluded_events' => ['60m', '60m Hurdles', '70m', '300m', '600m', '1 mile', '700m Walk', '1100m Walk', '2000m', '10000'],
         'special_meet_names' => [
             'u20-open' => 'U20 & Opens Champs',
             'u9-18' => 'U9-U18 Champs',
@@ -176,6 +177,41 @@ function groupResultsByAthlete($resultData) {
     }
 
     return $athletes;
+}
+
+function sortAthletesByScore($athletes) {
+    uasort($athletes, function ($a, $b) {
+        return $b['score'] <=> $a['score'];
+    });
+
+    return $athletes;
+}
+
+function buildClubSummaries($clubs, $clubsData, $meetEventArray) {
+    $officialPoints = appConfig()['official_points'];
+
+    foreach ($clubs as $clubName => $clubObj) {
+        $clubs[$clubName]['size'] = $clubsData[$clubName]['size'];
+        $clubs[$clubName]['officials'] = 0;
+
+        foreach ($meetEventArray as $i => $meet) {
+            $officialCount = $clubsData[$clubName]['officials'][$i] ?? 0;
+            $clubs[$clubName]['officials'] += $officialCount * $officialPoints;
+        }
+
+        $clubs[$clubName]['cpf'] = calcClubParticipationaFactor(count($clubObj['athletes']), $clubs[$clubName]['size']);
+        $clubs[$clubName]['adj'] = calcClubAdjustedTotal($clubObj['score'], $clubs[$clubName]['cpf'], $clubs[$clubName]['officials']);
+    }
+
+    return sortClubsByAdjustedScore($clubs);
+}
+
+function sortClubsByAdjustedScore($clubs) {
+    uasort($clubs, function ($a, $b) {
+        return $b['adj'] <=> $a['adj'];
+    });
+
+    return $clubs;
 }
 
 function normaliseMeetName($filename, $comp) {
