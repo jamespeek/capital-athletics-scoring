@@ -1,6 +1,9 @@
 <?php
 
-function calcScore($age, $gender, $eventName, $rawResult) {
+// Use a sentinel for Open so it cannot be confused with a real age bucket like U20.
+define('OPEN_AGE_SENTINEL', 999);
+
+function calcScore($age, $gender, $eventName, $rawResult, $useOwnAgeLookup = false) {
     $records = scoreLoadRecords();
     $wmaData = scoreLoadWmaData();
 
@@ -56,25 +59,40 @@ function calcScore($age, $gender, $eventName, $rawResult) {
     $lookupAge = $actualAge;
     $factor = 1.0;
     $adjustedValue = $rawValue;
+    $wmaEvent = $event;
+    $recordEvent = $event;
 
-    if ($actualAge !== 999 && $actualAge >= 35) {
+    if (isMastersAge($actualAge)) {
         $wmaGender = $gender === 'Male' ? 'M' : 'F';
-        $factor = (float)($wmaData[$wmaGender][$actualAge][$event] ?? 1);
+        $wmaEvent = scoreMastersWmaEventKey($event);
+        $recordEvent = scoreMastersRecordEventKey($event, $gender);
+
+        // Male masters aged 35-59 may run 2000m steeple, but the WMA/open-record comparison is against
+        // the 3000m steeple event, so we project the 2000m time out to an equivalent 3000m time first,
+        // with an extra 15 seconds added to account for the added endurance demand over the longer distance.
+        if ($gender === 'Male' && $actualAge < 60 && $event === '2000m steeple') {
+            $rawValue = ($rawValue * 1.5) + 15;
+            $scoreData['meta']['display']['raw_result'] = scoreFormatDisplayResult('3000m steeple', (string)$rawValue, $rawValue);
+        }
+
+        $factor = (float)($wmaData[$wmaGender][$actualAge][$wmaEvent] ?? 1);
         $adjustedValue = $rawValue * $factor;
-        $lookupAge = 999; // compare masters to Open
-    } elseif ($actualAge !== 999) {
+        $lookupAge = OPEN_AGE_SENTINEL; // compare masters to Open
+    } elseif ($actualAge !== OPEN_AGE_SENTINEL) {
         // underage lookup is one year up
-        $lookupAge++;
+        if (!$useOwnAgeLookup) {
+            $lookupAge++;
+        }
     }
 
-    $scoreData['meta']['adjustment']['wma_factor'] = $actualAge >= 35 && $actualAge !== 999 ? $factor : null;
+    $scoreData['meta']['adjustment']['wma_factor'] = isMastersAge($actualAge) ? $factor : null;
     $scoreData['meta']['adjustment']['adjusted_result'] = $adjustedValue;
     $scoreData['meta']['lookup']['age'] = $lookupAge;
-    $scoreData['meta']['display']['wma_factor'] = $actualAge >= 35 && $actualAge !== 999 ? scoreFormatNumber($factor, 5) : null;
-    $scoreData['meta']['display']['adjusted_result'] = scoreFormatNumber((float)$adjustedValue, 2);
+    $scoreData['meta']['display']['wma_factor'] = isMastersAge($actualAge) ? scoreFormatNumber($factor, 5) : null;
+    $scoreData['meta']['display']['adjusted_result'] = scoreFormatAdjustedDisplayResult($eventRaw, $adjustedValue);
     $scoreData['meta']['display']['lookup_age'] = scoreAgeLabel((string)$lookupAge);
 
-    $record = scoreFindRecord($records, $lookupAge, $gender, $event);
+    $record = scoreFindRecord($records, $lookupAge, $gender, $recordEvent);
 
     if (!$record) {
         $scoreData['status'] = 'no_record';
@@ -147,8 +165,18 @@ function buildAthleteEventSummary($athlete, $eventName, $eventResults, $meetEven
                 continue;
             }
 
+            // U9-U18 Champs results for U12 and below should be scored against their own age records,
+            // rather than the usual "one age up" junior lookup.
+            $useOwnAgeLookup = $meetName === $specialMeetNames['u9-18'] && $eventResult['age'] <= 12;
+
             $meetSummary['result_str'] = $eventResult['result_str'];
-            $meetSummary['score_data'] = calcScore($eventResult['age'], $eventResult['gender'], $eventResult['event'], $eventResult['result_raw']);
+            $meetSummary['score_data'] = calcScore(
+                $eventResult['age'],
+                $eventResult['gender'],
+                $eventResult['event'],
+                $eventResult['result_raw'],
+                $useOwnAgeLookup
+            );
             $meetSummary['has_missing_record'] = $meetSummary['score_data']['status'] === 'no_record';
 
             if ($meetSummary['score_data']['score'] !== null && $meetSummary['score_data']['score'] > $bestScore) {
@@ -321,16 +349,20 @@ function scoreNormaliseAge($age) {
     }
 
     if (strcasecmp($age, 'Open') === 0) {
-        return 999;
+        return OPEN_AGE_SENTINEL;
     }
 
     return null;
 }
 
+function isMastersAge($age) {
+    return $age !== OPEN_AGE_SENTINEL && $age >= 35;
+}
+
 function scoreAgeLabel($age) {
     $age = (string)$age;
 
-    if (strcasecmp($age, 'Open') === 0 || (int)$age === 999) {
+    if (strcasecmp($age, 'Open') === 0 || (int)$age === OPEN_AGE_SENTINEL) {
         return 'Open';
     }
 
@@ -454,4 +486,50 @@ function scoreFormatDisplayResult($eventName, $resultText, $rawValue = null) {
     $seconds = $rawValue - ($minutes * 60);
 
     return sprintf('%d:%05.2f', $minutes, $seconds);
+}
+
+function scoreFormatAdjustedDisplayResult($eventName, $adjustedValue) {
+    if (!scoreIsTimeEvent(scoreNormaliseEvent($eventName))) {
+        return scoreFormatNumber((float)$adjustedValue, 2);
+    }
+
+    if ($adjustedValue < 60) {
+        return scoreFormatNumber((float)$adjustedValue, 2);
+    }
+
+    return scoreFormatDisplayResult($eventName, (string)$adjustedValue, (float)$adjustedValue);
+}
+
+function scoreMastersWmaEventKey($eventName) {
+    if (preg_match('/^\d{2,3}m hurdles$/', $eventName)) {
+        if (preg_match('/^(80|100|110)m hurdles$/', $eventName)) {
+            return 'Short Hurdles';
+        }
+
+        if (preg_match('/^(200|300|400)m hurdles$/', $eventName)) {
+            return 'Long Hurdles';
+        }
+    }
+
+    if (preg_match('/^\d{4}m steeple$/', $eventName)) {
+        return 'Steeple Chase';
+    }
+
+    return $eventName;
+}
+
+function scoreMastersRecordEventKey($eventName, $gender) {
+    if (preg_match('/^(80|100|110)m hurdles$/', $eventName)) {
+        return $gender === 'Male' ? '110m hurdles' : '100m hurdles';
+    }
+
+    if (preg_match('/^(200|300|400)m hurdles$/', $eventName)) {
+        return '400m hurdles';
+    }
+
+    if (preg_match('/^\d{4}m steeple$/', $eventName)) {
+        return '3000m steeple';
+    }
+
+    return $eventName;
 }

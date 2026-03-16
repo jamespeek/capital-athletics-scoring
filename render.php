@@ -18,10 +18,16 @@ function buildScoreTooltipLines($scoreData) {
     $record = $meta['record'] ?? [];
     $display = $meta['display'] ?? [];
     $lines = [];
+    $displayRawResult = $display['raw_result'] ?? $input['result'] ?? '';
+
+    if (($input['result'] ?? '') !== '' && $displayRawResult !== ($input['result'] ?? '')) {
+        $displayRawResult .= '*';
+    }
+
     $lines[] = 'Input age: ' . ($input['age'] ?? '');
     $lines[] = 'Input gender: ' . ($input['gender'] ?? '');
     $lines[] = 'Input event: ' . ($input['event'] ?? '');
-    $lines[] = 'Raw result: ' . ($display['raw_result'] ?? $input['result'] ?? '');
+    $lines[] = 'Raw result: ' . $displayRawResult;
 
     if (($adjustment['wma_factor'] ?? null) !== null) {
         $lines[] = 'WMA factor: ' . ($display['wma_factor'] ?? '');
@@ -91,11 +97,9 @@ function renderAthleteMeetSummary($meetSummary) {
         if ($meetSummary['has_missing_record']) {
             echo ' ' . renderMissingRecordBadge();
         }
-
-        if ($pointsScore !== null) {
-            echo ' [PF=' . number_format($meetSummary['participation_score'], 2) . ']';
-        }
     }
+
+    echo ' [PF=' . number_format($meetSummary['participation_score'], 2) . ']';
 
     echo '</li>';
     return ob_get_clean();
