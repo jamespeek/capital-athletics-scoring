@@ -1,23 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CA: Senior athletics scoring</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <link rel="stylesheet" href="assets/app.css">
-</head>
-<body>
-
-<div class="container">
-    
 <?php
-
-define('ACT_SCORE_BASE', 800);
 
 $verbose = $_GET['verbose'] ?? true;
 $clubFilter = $_GET['club'] ?? false;
 $comp = $_GET['comp'] ?? 'ss';
+$assetCssVersion = @filemtime(__DIR__ . '/assets/app.css') ?: time();
+$assetJsVersion = @filemtime(__DIR__ . '/assets/app.js') ?: time();
 
 include_once 'utils.php';
 include_once 'scoring.php';
@@ -40,10 +27,9 @@ $meetEventArray = buildMeetEventArray($resultData);
 // Keep only one club's results when a club filter has been chosen.
 $resultData = filterResultsByClub($resultData, $clubFilter);
 
-// sort the data by name then meet
+// Sort the results by athlete name so the output is grouped consistently.
 usort($resultData, function($a, $b) {
     return strcasecmp($a['lastname'] . ' ' . $a['firstname'], $b['lastname'] . ' ' . $b['firstname']);
-    return strcasecmp($a['meet'], $b['meet']);
 });
 
 // Bundle each person's results together so we can score them event by event.
@@ -66,68 +52,40 @@ foreach ($athletes as $athlete_name => $athlete) {
         // temp hack for non events
         if ($event == '10000') continue;
 
+        $eventSummary = buildAthleteEventSummary($athlete, $event, $results, $meetEventArray);
+
         echo '<li>';
         echo $event;
         echo '<ul>';
 
-        $event_total = 0;
-
-        $idx = 0;
-        $offered = 0;
-        $entered = 0;
-
-        for ($idx; $idx < count($meetEventArray); $idx++) {
-            if (!in_array($event, $meetEventArray[$idx]['events'])) continue;
-
-            $name = $meetEventArray[$idx]['name'];
-
-            if ($name === 'U9-U18 Champs' && $athlete['age'] > 17) continue;
-            if ($name === 'U20 & Opens Champs' && $athlete['age'] < 18) continue;
-
+        foreach ($eventSummary['meets'] as $meetSummary) {
             echo '<li>';
+            echo $meetSummary['name'] . ': ';
 
-            $offered++;
+            if ($meetSummary['score_data'] !== null) {
+                $pointsScore = $meetSummary['score_data']['score'];
 
-            echo $name . ': ';
+                echo $meetSummary['result_str'] . ' = ';
+                echo ($pointsScore === null ? '?' : $pointsScore) . ' pts';
+                echo renderScoreTooltipButton($meetSummary['score_data']['tooltip']);
 
-            foreach ($results as $result) {
-                if ($result['result_raw'] && $result['meet'] == $meetEventArray[$idx]['name']) {
-                    echo $result['result_str'] . ' = ';
-                    
-                    // get point score based on age, gender, event, result, type of event
-                    $points_score = calcScore($result['age'], $result['gender'], $result['event'], $result['result_raw']);
-
-                    echo $points_score . ' pts';
-
-                    if ($points_score != '?') {
-                        // if the score is bigger than our running max then update it
-                        if ($points_score > $event_total) $event_total = $points_score;
-                    }
-
-                    if ($points_score == '?') {
-                        echo ' <span style="margin-left:10px; background:gold; border-radius: 3px; padding: 1px 3px">No record available</span>';
-                    }
-
-                    $entered++;
-                    break;
+                if ($meetSummary['has_missing_record']) {
+                    echo ' <span style="margin-left:10px; background:gold; border-radius: 3px; padding: 1px 3px">No record available</span>';
                 }
-            }
 
-            // calculate the participation score (how many times they've done the event divided by the times offered)
-            $participation_score = $entered / $offered;
-            
-            if (isset($points_score) && $points_score != '?') {
-                echo ' [PF=' . number_format($participation_score, 2) . ']';
+                if ($pointsScore !== null) {
+                    echo ' [PF=' . number_format($meetSummary['participation_score'], 2) . ']';
+                }
             }
 
             echo '</li>';
         }
 
-        if ($event_total) {
-            echo '<div style="margin-top:5px"><strong>Best:</strong> ' . $event_total . ' &times; ' . number_format($participation_score, 2) . ' = ' . round($event_total * $participation_score) . '</div>';
+        if ($eventSummary['best_score']) {
+            echo '<div style="margin-top:5px"><strong>Best:</strong> ' . $eventSummary['best_score'] . ' &times; ' . number_format($eventSummary['participation_score'], 2) . ' = ' . $eventSummary['final_score'] . '</div>';
         }
 
-        $athlete_totals[] = round($event_total * $participation_score);
+        $athlete_totals[] = $eventSummary['final_score'];
 
         echo '</ul>';
         echo '</li>';
@@ -167,14 +125,16 @@ foreach ($athletes as $athlete_name => $athlete) {
 
 $output = ob_get_clean();
 
-if ($verbose) {
-    echo $output;
-}
-
 // output athletes scores
 uasort($athletes, function ($a, $b) {
     return $b['score'] <=> $a['score'];
 });
+
+ob_start();
+
+if ($verbose) {
+    echo $output;
+}
 
 echo '<h2>Athlete scores</h2>';
 echo '<table class="table table-bordered table-striped table-sm">';
@@ -202,7 +162,8 @@ if (!$clubFilter) {
         $clubs[$clubName]['officials'] = 0;
         foreach ($meetEventArray as $i => $meet) {
             // for every officials per meet the club gets 20 pts
-            $clubs[$clubName]['officials'] += $clubsData[$clubName]['officials'][$i] * 20;
+            $officialCount = $clubsData[$clubName]['officials'][$i] ?? 0;
+            $clubs[$clubName]['officials'] += $officialCount * 20;
         }
 
         $clubs[$clubName]['cpf'] = calcClubParticipationaFactor(count($clubObj['athletes']), $clubs[$clubName]['size']);
@@ -241,9 +202,24 @@ if (!$clubFilter) {
     echo '</table>';
 }
 
-?>
+$pageContent = ob_get_clean();
 
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CA: Senior athletics scoring</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/app.css?v=<?= $assetCssVersion ?>">
+</head>
+<body>
+
+<div class="container">
+    <?= $pageContent ?>
 </div>
-<script src="assets/app.js"></script>
+
+<script src="assets/app.js?v=<?= $assetJsVersion ?>"></script>
 </body>
 </html>

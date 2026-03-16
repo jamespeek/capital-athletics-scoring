@@ -10,7 +10,46 @@ $sheets = new Google_Service_Sheets($client);
 
 loadEnv();
 
-$excludedEvents = ['1 mile', '60m', '60m Hurdles', '300m', '2000m', '70m'];
+function appConfig() {
+    static $config = null;
+
+    if ($config !== null) {
+        return $config;
+    }
+
+    $config = [
+        'score_base' => 800,
+        'excluded_events' => ['60m', '60m Hurdles', '70m', '300m', '600m', '1 mile', '700m Walk', '1100m Walk', '2000m'],
+        'special_meet_names' => [
+            'u20-open' => 'U20 & Opens Champs',
+            'u9-18' => 'U9-U18 Champs',
+        ],
+        'club_name_map' => [
+            'Queanbeyan Lac' => 'Queanbeyan Little Athletics',
+            'Woden Thunder Athletics' => 'Woden Athletics',
+            'Tuggeranong Tornadoes Little A' => 'Tuggeranong Little Athletics',
+            'Tuggeranong Tornadoes Lac' => 'Tuggeranong Little Athletics',
+            'Tuggeranong Lac' => 'Tuggeranong Little Athletics',
+            'Belconnen Lac' => 'Belconnen Little Athletics',
+            'South Canberra-Tuggeranong' => 'South Canberra Tuggeranong Athletics',
+            'Act Para-Athletics Talent Squa' => 'ACT Para-Athletics Talent Squad',
+            'Gungahlin Lac' => 'Gungahlin Athletics',
+            'Gungahlin Athletics Club' => 'Gungahlin Athletics',
+            'Murrumbateman Lac' => 'Murrumbateman Little Athletics',
+            'Jindabyne Lac' => 'Jindabyne Little Athletics',
+            'Calwell Little Aths' => 'Calwell Little Athletics',
+            'Weston Creek Lac' => 'Weston Creek Little Athletics',
+            'Lanyon Lac' => 'Lanyon Little Athletics',
+            'Act Masters Athletics' => 'ACT Masters Athletics',
+            'Act Masters Athletics Club' => 'ACT Masters Athletics',
+            'Bega Valley Little Athletics C' => 'Bega Valley Little Athletics',
+            'North Canberra-Gungahlin' => 'North Canberra-Gungahlin Athletics',
+            'Cooma Athletics Incorporated' => 'Cooma Athletics',
+        ],
+    ];
+
+    return $config;
+}
 
 function getData($filename, $comp) {
     $content = str_replace(["\r\n", "\r"], "\n", file_get_contents($filename));
@@ -27,12 +66,14 @@ function getData($filename, $comp) {
     while (($row = fgetcsv($handle, null, ';')) !== false) {
         if (empty(array_filter($row)) || $row[0] != 'E') continue; // skip empty lines or lines that don't start with E (event?)
 
+        [$resultRaw, $resultUnits] = parseResult($row[10]);
+
         $result = [
             'meet' => $meet,
             'event' => normaliseEventName($row[4]),
             'result_str' => $row[10],
-            'result_raw' => parseResult($row[10])[0],
-            'result_units' => parseResult($row[10])[1],
+            'result_raw' => $resultRaw,
+            'result_units' => $resultUnits,
             'wind' => (float)$row[12],
             'place' => (int)$row[14],
             'lastname' => preg_replace('/\s+[T0-9\(\)-]+/', '', $row[22]),
@@ -40,11 +81,7 @@ function getData($filename, $comp) {
             'gender' => $row[25],
             'dob' => strtotime($row[26]),
             'age' => (int)$row[29],
-            'club' => str_replace(
-                ['Queanbeyan Lac', 'Woden Thunder Athletics', 'Tuggeranong Tornadoes Little A', 'Tuggeranong Tornadoes Lac', 'Tuggeranong Lac', 'Belconnen Lac', 'South Canberra-Tuggeranong', 'Act Para-Athletics Talent Squa', 'Gungahlin Lac', 'Gungahlin Athletics Club', 'Murrumbateman Lac', 'Jindabyne Lac', 'Calwell Little Aths', 'Weston Creek Lac', 'Lanyon Lac', 'Act Masters Athletics', 'Act Masters Athletics Club', 'Bega Valley Little Athletics C', 'North Canberra-Gungahlin', 'Cooma Athletics Incorporated'],
-                ['Queanbeyan Little Athletics', 'Woden Athletics', 'Tuggeranong Little Athletics', 'Tuggeranong Little Athletics', 'Tuggeranong Little Athletics', 'Belconnen Little Athletics', 'South Canberra Tuggeranong Athletics', 'ACT Para-Athletics Talent Squad', 'Gungahlin Athletics', 'Gungahlin Athletics', 'Murrumbateman Little Athletics', 'Jindabyne Little Athletics', 'Calwell Little Athletics', 'Weston Creek Little Athletics', 'Lanyon Little Athletics', 'ACT Masters Athletics', 'ACT Masters Athletics', 'Bega Valley Little Athletics', 'North Canberra-Gungahlin Athletics', '	Cooma Athletics'],
-                $row[28]
-            ),
+            'club' => normaliseClubName($row[28]),
         ];
 
         if ($result['result_raw']) $data[] = $result;
@@ -82,7 +119,7 @@ function loadCompetitionResults($files, $comp) {
 }
 
 function filterExcludedEvents($resultData) {
-    global $excludedEvents;
+    $excludedEvents = appConfig()['excluded_events'];
 
     return array_filter($resultData, function ($row) use ($excludedEvents) {
         return !in_array($row['event'], $excludedEvents, true);
@@ -144,11 +181,7 @@ function groupResultsByAthlete($resultData) {
 function normaliseMeetName($filename, $comp) {
     $basename = strtolower(pathinfo($filename, PATHINFO_FILENAME));
     $basenameWithoutPrefix = preg_replace('/^\d+[-_]?/', '', $basename);
-
-    $specialMeetNames = [
-        'u20-open' => 'U20 & Opens Champs',
-        'u9-18' => 'U9-U18 Champs',
-    ];
+    $specialMeetNames = appConfig()['special_meet_names'];
 
     if (isset($specialMeetNames[$basenameWithoutPrefix])) {
         return $specialMeetNames[$basenameWithoutPrefix];
@@ -158,6 +191,13 @@ function normaliseMeetName($filename, $comp) {
     $meet = preg_replace('/([0-9]+)/', '#$1', $meet);
 
     return strtoupper($comp) . ' ' . ucwords($meet);
+}
+
+function normaliseClubName($clubName) {
+    $clubName = trim((string)$clubName);
+    $clubNameMap = appConfig()['club_name_map'];
+
+    return $clubNameMap[$clubName] ?? $clubName;
 }
 
 function normaliseEventName($eventName) {
@@ -179,16 +219,19 @@ function normaliseEventName($eventName) {
         '/^200$/'     => '200m',
         '/^300$/'     => '300m',
         '/^400$/'     => '400m',
+        '/^600$/'     => '600m',
         '/^800$/'     => '800m',
         '/^1000$/'    => '1000m',
         '/^1500$/'    => '1500m',
         '/^2000$/'    => '2000m',
         '/^3000$/'    => '3000m',
         '/^5000$/'    => '5000m',
-        '/^1500W$/'  => '1500m Walk',
-        '/^3000W$/'  => '3000m Walk',
-        '/^5000W$/'  => '5000m Walk',
-        '/^1MILE$/'  => '1 mile',
+        '/^700W$/'    => '700m Walk',
+        '/^1100W$/'   => '1100m Walk',
+        '/^1500W$/'   => '1500m Walk',
+        '/^3000W$/'   => '3000m Walk',
+        '/^5000W$/'   => '5000m Walk',
+        '/^1MILE$/'   => '1 mile',
         '/^LJ$/i'     => 'Long Jump',
         '/^TJ$/i'     => 'Triple Jump',
         '/^HJ$/i'     => 'High Jump',
@@ -226,6 +269,10 @@ function parseResult($result_str) {
 }
 
 function calcClubParticipationaFactor($athletes, $size) {
+    if ($size <= 0) {
+        return number_format(0, 3);
+    }
+
     return number_format($athletes / $size, 3);
 }
 

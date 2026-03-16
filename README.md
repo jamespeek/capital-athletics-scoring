@@ -40,12 +40,15 @@ The app reads all CSV files for the selected competition, normalises the meet an
 
 Some events are excluded before any scoring is calculated. At the moment these are:
 
-* `1 mile`
 * `60m`
 * `60m Hurdles`
-* `300m`
-* `2000m`
 * `70m`
+* `300m`
+* `600m`
+* `1 mile`
+* `700m Walk`
+* `1100m Walk`
+* `2000m`
 
 The remaining results are grouped by athlete and then by event. For each event:
 
@@ -59,7 +62,7 @@ The points score for each result is based on ACT record data in `data/reference/
 * Under-35 athletes are scored against the next age group up.
 * Athletes aged 35 and over are adjusted using WMA factors and then compared against Open records.
 * Time events and field events are compared differently so that a stronger performance always produces a higher score.
-* The score scale is based on `800` points for matching the reference performance.
+* The score scale is based on the app config in `utils.php`, currently set to `800` points for matching the reference performance.
 
 Athlete totals are then calculated:
 

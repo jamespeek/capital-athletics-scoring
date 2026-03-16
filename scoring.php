@@ -5,11 +5,13 @@
  *
  * Usage:
  *   require_once __DIR__ . '/act_score.php';
- *   echo calcScore(17, 'Men', 'Pole Vault', 3.50);
+ *   $scoreData = calcScore(17, 'Men', 'Pole Vault', 3.50);
+ *   echo $scoreData['score'];
+ *   echo renderScoreTooltipButton($scoreData['tooltip']);
  *
  * Behaviour:
- *   - Returns HTML containing the score and a small info tooltip button
- *   - If no suitable record is found it returns "?"
+ *   - Returns score data including the numeric score and tooltip lines
+ *   - If no suitable record is found the score is null
  *   - CSV parsed once per request and cached for speed
  *
  * CSV expected at:
@@ -30,8 +32,18 @@ function calcScore($age, $gender, $event, $result) {
     $event = actScoreNormalizeEvent($eventRaw);
     $rawValue = is_numeric($result) ? (float)$result : actScoreParseResult($resultRaw);
 
+    $tooltip = [];
+    $tooltip[] = "Input age: {$ageRaw}";
+    $tooltip[] = "Input gender: {$genderRaw}";
+    $tooltip[] = "Input event: {$eventRaw}";
+    $tooltip[] = "Raw result: {$resultRaw}";
+
     if (!$records || $actualAge === null || $gender === '' || $event === '' || $rawValue === null || $rawValue <= 0) {
-        return '?';
+        $tooltip[] = 'Status: Score unavailable';
+        return [
+            'score' => null,
+            'tooltip' => $tooltip,
+        ];
     }
 
     $lookupAge = $actualAge;
@@ -51,13 +63,28 @@ function calcScore($age, $gender, $event, $result) {
     $record = actScoreFindRecord($records, $lookupAge, $gender, $event);
 
     if (!$record) {
-        return '?';
+        if ($actualAge >= 35 && $actualAge !== 999) {
+            $tooltip[] = "WMA factor: " . actScoreFormatNumber($factor, 5);
+            $tooltip[] = "Adjusted result: " . actScoreFormatNumber($adjustedValue, 5);
+            $tooltip[] = "Lookup age: Open";
+        }
+
+        $tooltip[] = 'Status: No matching ACT record found';
+
+        return [
+            'score' => null,
+            'tooltip' => $tooltip,
+        ];
     }
 
     $recordValue = $record['_result'] ?? null;
 
     if (!$recordValue || $recordValue <= 0) {
-        return '?';
+        $tooltip[] = 'Status: Matched record was invalid';
+        return [
+            'score' => null,
+            'tooltip' => $tooltip,
+        ];
     }
 
     $timeEvent = actScoreIsTimeEvent($event);
@@ -68,13 +95,7 @@ function calcScore($age, $gender, $event, $result) {
         $percentage = $adjustedValue / $recordValue;
     }
 
-    $score = round($percentage * ACT_SCORE_BASE, 0);
-
-    $tooltip = [];
-    $tooltip[] = "Input age: {$ageRaw}";
-    $tooltip[] = "Input gender: {$genderRaw}";
-    $tooltip[] = "Input event: {$eventRaw}";
-    $tooltip[] = "Raw result: {$resultRaw}";
+    $score = round($percentage * appConfig()['score_base'], 0);
 
     if ($actualAge >= 35 && $actualAge !== 999) {
         $tooltip[] = "WMA factor: " . actScoreFormatNumber($factor, 5);
@@ -94,13 +115,82 @@ function calcScore($age, $gender, $event, $result) {
     $tooltip[] = "Percent of record: " . number_format($percentage * 100, 1) . "%";
     $tooltip[] = "Score: {$score}";
 
+    return [
+        'score' => (float)$score,
+        'tooltip' => $tooltip,
+    ];
+}
+
+function renderScoreTooltipButton($tooltip) {
     $tooltipText = htmlspecialchars(implode("\n", $tooltip), ENT_QUOTES, 'UTF-8');
 
-    echo '<button type="button" class="act-score-btn" data-tip="' . $tooltipText . '">';
-    echo '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Tabler Icons by Paweł Kuna - https://github.com/tabler/tabler-icons/blob/master/LICENSE --><path fill="currentColor" d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1-19.995.324L2 12l.004-.28C2.152 6.327 6.57 2 12 2m0 9h-1l-.117.007a1 1 0 0 0 0 1.986L11 13v3l.007.117a1 1 0 0 0 .876.876L12 17h1l.117-.007a1 1 0 0 0 .876-.876L14 16l-.007-.117a1 1 0 0 0-.764-.857l-.112-.02L13 15v-3l-.007-.117a1 1 0 0 0-.876-.876zm.01-3l-.127.007a1 1 0 0 0 0 1.986L12 10l.127-.007a1 1 0 0 0 0-1.986z"/></svg>';
-    echo '</button>';
+    return '<button type="button" class="act-score-btn" data-tip="' . $tooltipText . '">' .
+        '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Tabler Icons by Paweł Kuna - https://github.com/tabler/tabler-icons/blob/master/LICENSE --><path fill="currentColor" d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1-19.995.324L2 12l.004-.28C2.152 6.327 6.57 2 12 2m0 9h-1l-.117.007a1 1 0 0 0 0 1.986L11 13v3l.007.117a1 1 0 0 0 .876.876L12 17h1l.117-.007a1 1 0 0 0 .876-.876L14 16l-.007-.117a1 1 0 0 0-.764-.857l-.112-.02L13 15v-3l-.007-.117a1 1 0 0 0-.876-.876zm.01-3l-.127.007a1 1 0 0 0 0 1.986L12 10l.127-.007a1 1 0 0 0 0-1.986z"/></svg>' .
+        '</button>';
+}
 
-    return (float)$score;
+function buildAthleteEventSummary($athlete, $event, $results, $meetEventArray) {
+    $meetSummaries = [];
+    $bestScore = 0;
+    $offered = 0;
+    $entered = 0;
+
+    foreach ($meetEventArray as $meet) {
+        if (!in_array($event, $meet['events'])) {
+            continue;
+        }
+
+        $meetName = $meet['name'];
+
+        if ($meetName === 'U9-U18 Champs' && $athlete['age'] > 17) {
+            continue;
+        }
+
+        if ($meetName === 'U20 & Opens Champs' && $athlete['age'] < 18) {
+            continue;
+        }
+
+        $offered++;
+
+        $meetSummary = [
+            'name' => $meetName,
+            'result_str' => null,
+            'score_data' => null,
+            'participation_score' => 0,
+            'has_missing_record' => false,
+        ];
+
+        foreach ($results as $result) {
+            if (!$result['result_raw'] || $result['meet'] != $meetName) {
+                continue;
+            }
+
+            $meetSummary['result_str'] = $result['result_str'];
+            $meetSummary['score_data'] = calcScore($result['age'], $result['gender'], $result['event'], $result['result_raw']);
+            $meetSummary['has_missing_record'] = $meetSummary['score_data']['score'] === null;
+
+            if ($meetSummary['score_data']['score'] !== null && $meetSummary['score_data']['score'] > $bestScore) {
+                $bestScore = $meetSummary['score_data']['score'];
+            }
+
+            $entered++;
+            break;
+        }
+
+        $meetSummary['participation_score'] = $offered > 0 ? $entered / $offered : 0;
+        $meetSummaries[] = $meetSummary;
+    }
+
+    $participationScore = $offered > 0 ? $entered / $offered : 0;
+    $finalScore = round($bestScore * $participationScore);
+
+    return [
+        'event' => $event,
+        'meets' => $meetSummaries,
+        'best_score' => $bestScore,
+        'participation_score' => $participationScore,
+        'final_score' => $finalScore,
+    ];
 }
 
 function actScoreLoadRecords() {
