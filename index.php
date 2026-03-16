@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corroboree Athletics - senior athletics scoring</title>
+    <title>Senior athletics scoring</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <style>
+        /* .athlete:not(:has(button)), .athlete > ul > li:not(:has(li)) {
+            display: none;
+        } */
+
+        li li:not(:has(button)) {
+            opacity: .3;
+        }
+    </style>
 </head>
 <body>
 
@@ -14,13 +23,21 @@
 
 $verbose = $_GET['verbose'] ?? true;
 $clubFilter = $_GET['club'] ?? false;
-$comp = $_GET['comp'] ?? 'hn';
+$comp = $_GET['comp'] ?? 'ss';
 
 include_once 'utils.php';
+include_once 'act_score.php';
 
 $clubsData = loadClubData();
 
 $files = glob(dirname(__FILE__) . '/data/' . $comp . '/*.csv');
+
+if ($clubFilter) {
+    $files = array_filter($files, function ($file) {
+        return preg_match('/\/\d+\.csv$/', $file);
+    });
+}
+
 natsort($files);
 
 // load the data
@@ -47,7 +64,6 @@ foreach ($resultData as $entry) {
     }
 }
 
-// TODO rework this to use loadMeetData()
 $meetEventArray = [];
 foreach ($meetEventMap as $meet => $events) {
     $meetEventArray[] = [
@@ -88,12 +104,16 @@ $clubs = [];
 
 // loop through the athletes
 foreach ($athletes as $athlete_name => $athlete) {
+    echo '<div class="athlete">';
     echo '<strong>' . $athlete_name . ' (' . $athlete['age'] . ')</strong><ul>';
 
     $athlete_totals = [];
 
     // loop through the athletes events
     foreach ($athlete['events'] as $event => $results) {
+        // temp hack for non events
+        if ($event == '10000') continue;
+
         echo '<li>';
         echo $event;
         echo '<ul>';
@@ -107,18 +127,30 @@ foreach ($athletes as $athlete_name => $athlete) {
         for ($idx; $idx < count($meetEventArray); $idx++) {
             if (!in_array($event, $meetEventArray[$idx]['events'])) continue;
 
+            $name = $meetEventArray[$idx]['name'];
+            
+            if (strpos($name, 'a')) {
+                $name = 'U9-U18 Champs';
+                if ($clubFilter || $result['age'] > 17) continue;
+            } else if (strpos($name, 'b')) {
+                $name = 'U20 & Opens Champs';
+                if ($clubFilter || $result['age'] < 18) continue;
+            }
+
             echo '<li>';
 
             $offered++;
 
-            echo $meetEventArray[$idx]['name'] . ': ';
+            echo $name . ': ';
 
             foreach ($results as $result) {
                 if ($result['result_raw'] && $result['meet'] == $meetEventArray[$idx]['name']) {
+                    echo $result['result_str'] . ' = ';
+                    
                     // get point score based on age, gender, event, result, type of event
-                    $points_score = calcScore($result['age'], $result['gender'], $result['event'], $result['result_raw'], $result['result_units']);
+                    $points_score = calcScore($result['age'], $result['gender'], $result['event'], $result['result_raw']);
 
-                    echo $result['result_str'] . ' = ' . $points_score . ' pts';
+                    echo $points_score . ' pts';
 
                     if ($points_score != '?') {
                         // if the score is bigger than our running max then update it
@@ -126,7 +158,7 @@ foreach ($athletes as $athlete_name => $athlete) {
                     }
 
                     if ($points_score == '?') {
-                        echo ' <span style="margin-left:10px; background:gold; border-radius: 3px; padding: 1px 3px">Missing event?</span>';
+                        echo ' <span style="margin-left:10px; background:gold; border-radius: 3px; padding: 1px 3px">No record available</span>';
                     }
 
                     $entered++;
@@ -137,12 +169,16 @@ foreach ($athletes as $athlete_name => $athlete) {
             // calculate the participation score (how many times they've done the event divided by the times offered)
             $participation_score = $entered / $offered;
             
-            echo ' [PF=' . number_format($participation_score, 2) . ']';
+            if (isset($points_score) && $points_score != '?') {
+                echo ' [PF=' . number_format($participation_score, 2) . ']';
+            }
 
             echo '</li>';
         }
 
-        echo '<div style="margin-top:5px"><strong>Best:</strong> ' . $event_total . ' &times; ' . number_format($participation_score, 2) . ' = ' . round($event_total * $participation_score) . '</div>';
+        if ($event_total) {
+            echo '<div style="margin-top:5px"><strong>Best:</strong> ' . $event_total . ' &times; ' . number_format($participation_score, 2) . ' = ' . round($event_total * $participation_score) . '</div>';
+        }
 
         $athlete_totals[] = round($event_total * $participation_score);
 
@@ -160,9 +196,13 @@ foreach ($athletes as $athlete_name => $athlete) {
 
     // sum the athletes highest scores (top 4 for ca)
     $athlete_total = array_sum($athlete_totals);
-    echo '<p>Total: ' . implode(' + ', $athlete_totals);
 
-    echo ' = ' . number_format($athlete_total) . ' pts</p>';
+    if ($athlete_total) {
+        echo '<p>Total: ' . implode(' + ', $athlete_totals);
+        echo ' = ' . number_format($athlete_total) . ' pts</p>';
+    }
+
+    echo '</div>';
 
     // push into a table of athletes
     $athletes[$athlete_name]['score'] = $athlete_total;
@@ -214,8 +254,8 @@ if (!$clubFilter) {
         
         $clubs[$clubName]['officials'] = 0;
         foreach ($meetEventArray as $i => $meet) {
-            // for every volunteer per meet the club gets 20 pts
-            $clubs[$clubName]['officials'] = $clubsData[$clubName]['volunteers'][$i] * 20;
+            // for every officials per meet the club gets 20 pts
+            $clubs[$clubName]['officials'] += $clubsData[$clubName]['officials'][$i] * 20;
         }
 
         $clubs[$clubName]['cpf'] = calcClubParticipationaFactor(count($clubObj['athletes']), $clubs[$clubName]['size']);
@@ -255,17 +295,6 @@ if (!$clubFilter) {
 }
 
 ?>
-
-<div class="alert alert-warning">
-    <h5>Notes</h5>
-    <ul class="mb-0">
-        <li>We are missing a few events like 200m Hurdles for some age groups (where we have 300m). I could make it look down an age for these?</li>
-        <li>Also missing is 3000m and 1500m Walk for Masters (in both the WMA table and the scoring for open).</li>
-        <li>Pole Vault and Hammer scoring is missing for juniors</li>
-        <li>We don't have adjustment factor for U18-U20 so they are being scored against Open values</li>
-        <li>We can only count the instances of events that had at least one result, so if no one ran then it's like it didn't happen, maybe that's ok.</li>
-    </ul>
-</div>
 
 </div>
 </body>

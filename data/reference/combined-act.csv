@@ -1,0 +1,500 @@
+﻿Age,Gender,Type,Event,Weight,Name,Result,Club,Date,"Date (short)",Venue,Notes,Source
+9,Boys,"ACT best",100m,,"C. Newman",13.74,Queanbeyan,1977-01-01,"Jan 1977",Canberra,,act-best.csv
+9,Boys,"ACT best",200m,,"T. Harper",29.14,"Weston Creek",1979-01-01,"Jan 1979",Canberra,,act-best.csv
+9,Boys,"ACT best",400m,,"N. Brown",1:06.04,Belconnen,1981-01-01,"Jan 1981",Canberra,,act-best.csv
+9,Boys,"ACT best","700m Walk",,"J. Wagstaff",3:45.44,Belconnen,1995-03-01,"Mar 1995",Canberra,,act-best.csv
+9,Boys,"ACT best",70m,,"M. Sloan",10.34,Naroma,1993-02-01,"Feb 1993",Canberra,,act-best.csv
+9,Boys,"ACT best",800m,,"N. Brown",2:30.24,Belconnen,1981-01-01,"Jan 1981",Canberra,,act-best.csv
+9,Boys,"ACT best",Discus,500g,"S. Dickie",28.90,Tuggeranong,1983-01-01,"Jan 1983",Canberra,,act-best.csv
+9,Boys,"ACT best","High Jump",,"P. Gooday",1.29,Ginninderra,1978-01-01,"Jan 1978",Canberra,,act-best.csv
+9,Boys,"ACT best","Long Jump",,"R. Kenworthy",4.48,Queanbeyan,<1985,<1985,Canberra,,act-best.csv
+9,Boys,"ACT best","Shot Put",2kg,"T. Martin",9.59,Tuggeranong,1989-02-01,"Feb 1989",Canberra,,act-best.csv
+9,Girls,"ACT best",100m,,"G. O'Rourke",14.45,Woden,2004-04-01,"Apr 2004",Canberra,,act-best.csv
+9,Girls,"ACT best",200m,,"M. Kelly",30.04,Queanbeyan,1997-03-01,"Mar 1997",Canberra,,act-best.csv
+9,Girls,"ACT best",400m,,"M. Prebble",1:07.94,Belconnen,1992-03-01,"Mar 1992",Canberra,,act-best.csv
+9,Girls,"ACT best","700m Walk",,"N. Wagstaff",3:29.94,"Weston Creek",1992-03-01,"Mar 1992",Canberra,,act-best.csv
+9,Girls,"ACT best",70m,,"A. Coddington",10.64,Belconnen,1998-03-01,"Mar 1998",Canberra,,act-best.csv
+9,Girls,"ACT best",800m,,"A. Ellwood",2:44.64,"Weston Creek",1987-03-01,"Mar 1987",Canberra,,act-best.csv
+9,Girls,"ACT best",Discus,500g,"S. Read",27.82,Corroboree,1984-01-01,"Jan 1984",Canberra,,act-best.csv
+9,Girls,"ACT best","High Jump",,"M. Still",1.23,Queanbeyan,1982-01-01,"Jan 1982",Canberra,,act-best.csv
+9,Girls,"ACT best","Long Jump",,"M. Kelly",4.19,Queanbeyan,1997-03-01,"Mar 1997",Canberra,,act-best.csv
+9,Girls,"ACT best","Shot Put",2kg,"S. Read",7.62,Corroboree,1984-01-01,"Jan 1984",Canberra,,act-best.csv
+10,Boys,"ACT best",100m,,"D. Kite",13.54,Queanbeyan,1986-02-01,"Feb 1986",Canberra,,act-best.csv
+10,Boys,"ACT best","1100m Walk",,"T. Hunt",5:47.75,Belconnen,2015-03-01,"Mar 2015",Canberra,,act-best.csv
+10,Boys,"ACT best",1500m,,"N. Brown",4:52.54,Belconnen,1982-01-01,"Jan 1982",Canberra,,act-best.csv
+10,Boys,"ACT best",200m,,"C. Newman",26.94,Queanbeyan,1978-01-01,"Jan 1978",Canberra,,act-best.csv
+10,Boys,"ACT best",400m,,"C. Newman",1:04.14,Queanbeyan,1978-01-01,"Jan 1978",Canberra,,act-best.csv
+10,Boys,"ACT best",70m,,"R. McLean",10.03,Queanbeyan,2001-03-01,"Mar 2001",Canberra,,act-best.csv
+10,Boys,"ACT best",800m,,"S. Hayes",2:23.44,Tuggeranong,1991-03-01,"Mar 1991",Canberra,,act-best.csv
+10,Boys,"ACT best",Discus,500g,"K. Reilly",33.78,Calwell,2010-03-01,"Mar 2010",Canberra,,act-best.csv
+10,Boys,"ACT best","High Jump",,"N. Bahnsen",1.43,Ginninderra,1997-03-01,"Mar 1997",Canberra,,act-best.csv
+10,Boys,"ACT best","Long Jump",,"T. Harper",4.94,"Weston Creek",1980-01-01,"Jan 1980",Canberra,,act-best.csv
+10,Boys,"ACT best","Shot Put",2kg,"K. Kouparitsas",10.71,Tuggeranong,1997-02-01,"Feb 1997",Canberra,,act-best.csv
+10,Girls,"ACT best",100m,,"J. Cowie",14.04,Corroboree,<1985,<1985,Canberra,,act-best.csv
+10,Girls,"ACT best","1100m Walk",,"L. Burns",5:42.49,Belconnen,2014-03-01,"Mar 2014",Canberra,,act-best.csv
+10,Girls,"ACT best",1500m,,"A. Ellwood",5:18.54,"Weston Creek",1988-02-01,"Feb 1988",Canberra,,act-best.csv
+10,Girls,"ACT best",200m,,"J. Hynes",29.30,Ginninderra,2016-03-01,"Mar 2016",Canberra,,act-best.csv
+10,Girls,"ACT best",400m,,"E. Jagger",1:06.34,"Weston Creek",1980-01-01,"Jan 1980",Canberra,,act-best.csv
+10,Girls,"ACT best",70m,,"J. LeFlay Schrooder",10.06,Woden,2000-03-01,"Mar 2000",Canberra,,act-best.csv
+10,Girls,"ACT best",800m,,"A. Ellwood",2:34.64,"Weston Creek",1988-03-01,"Mar 1988",Canberra,,act-best.csv
+10,Girls,"ACT best",Discus,500g,"S. Read",29.20,Corroboree,1985-01-01,"Jan 1985",Canberra,,act-best.csv
+10,Girls,"ACT best","High Jump",,"C. Jamieson",1.32,"Bega Valley",2004-04-01,"Apr 2004",Canberra,,act-best.csv
+10,Girls,"ACT best","Long Jump",,"H. Kennedy",4.40,Corroboree,1990-03-01,"Mar 1990",Canberra,,act-best.csv
+10,Girls,"ACT best","Shot Put",2kg,"S. Brennan",8.74,Calwell,2016-02-01,"Feb 2016",Canberra,,act-best.csv
+11,Boys,"ACT best",100m,,"D. Kite",13.14,Queanbeyan,1987-03-01,"Mar 1987",Canberra,,act-best.csv
+11,Boys,"ACT best","1100m Walk",,"S. Burns",5:26.42,Belconnen,2013-03-01,"Mar 2013",Canberra,,act-best.csv
+11,Boys,"ACT best",1500m,,"N. Brown",4:46.84,Belconnen,1983-01-01,"Jan 1983",Canberra,,act-best.csv
+11,Boys,"ACT best",200m,,"C. Newman",27.14,Queanbeyan,1979-01-01,"Jan 1979",Canberra,,act-best.csv
+11,Boys,"ACT best",400m,,"C. Newman",57.74,Queanbeyan,1979-01-01,"Jan 1979",Canberra,,act-best.csv
+11,Boys,"ACT best",800m,,"D. Adams",2:20.14,Woden,<1985,<1985,Canberra,,act-best.csv
+11,Boys,"ACT best",Discus,500g,"O. Andrews",37.53,Woden,2019-03-01,"Mar 2019",Canberra,,act-best.csv
+11,Boys,"ACT best","High Jump",,"R. Higginbotham",1.54,Ginninderra,1994-02-01,"Feb 1994",Canberra,,act-best.csv
+11,Boys,"ACT best",Javelin,400g,"H. Schofield",32.84,Corroboree,1998-03-01,"Mar 1998",Canberra,,act-best.csv
+11,Boys,"ACT best","Long Jump",,"S. Clarke",5.20,"Weston Creek",1983-01-01,"Jan 1983",Canberra,,act-best.csv
+11,Boys,"ACT best","Shot Put",2kg,"K. Kouparitsas",12.69,Tuggeranong,1998-02-01,"Feb 1998",Canberra,,act-best.csv
+11,Boys,"ACT best","Triple Jump",,"S. Clarke",10.38,"Weston Creek",1983-01-01,"Jan 1983",Canberra,,act-best.csv
+11,Girls,"ACT best",100m,,"A. Fowawa",13.04,Woden,<1985,<1985,Canberra,,act-best.csv
+11,Girls,"ACT best","1100m Walk",,"T. Smith",5:32.34,Belconnen,1995-03-01,"Mar 1995",Canberra,,act-best.csv
+11,Girls,"ACT best",1500m,,"N. Torley",5:102.11,"Weston Creek",2008-03-01,"Mar 2008",Canberra,,act-best.csv
+11,Girls,"ACT best",200m,,"M. Mackie",28.04,Woden,1983-01-01,"Jan 1983",Canberra,,act-best.csv
+11,Girls,"ACT best",400m,,"H. Wortley",1:02.74,Cooma,2004-04-01,"Apr 2004",Canberra,,act-best.csv
+11,Girls,"ACT best",800m,,"B. Reilly",2:26.45,Calwell,2008-03-01,"Mar 2008",Canberra,,act-best.csv
+11,Girls,"ACT best",Discus,500g,"S. Adams",29.21,Cooma,2019-03-01,"Mar 2019",Canberra,,act-best.csv
+11,Girls,"ACT best","High Jump",,"S. Davis",1.43,Belconnen,2006-03-01,"Mar 2006",Canberra,,act-best.csv
+11,Girls,"ACT best",Javelin,400g,"E. Vredenbregt",26.68,Queanbeyan,2007-03-01,"Mar 2007",Canberra,,act-best.csv
+11,Girls,"ACT best","Long Jump",,"M. Mackie",4.83,Woden,1983-01-01,"Jan 1983",Canberra,,act-best.csv
+11,Girls,"ACT best","Shot Put",2kg,"M. Fleming",10.55,Calwell,2002-03-02,"Mar 2002",Canberra,,act-best.csv
+11,Girls,"ACT best","Triple Jump",,"A. Thompson",9.73,Queanbeyan,2010-03-01,"Mar 2010",Canberra,,act-best.csv
+12,Boys,"ACT best",100m,,"S. Sheppard",12.73,Ginninderra,2000-03-01,"Mar 2000",Canberra,,act-best.csv
+12,Boys,"ACT best",1500m,,"N. Brown",4:33.34,Belconnen,1984-01-01,"Jan 1984",Canberra,,act-best.csv
+12,Boys,"ACT best","1500m Walk",,"J. Plested",6:49.44,Belconnen,1991-04-01,"Apr 1991",Canberra,,act-best.csv
+12,Boys,"ACT best",200m,,"S. Sheppard",26.07,Ginninderra,2000-03-01,"Mar 2000",Canberra,,act-best.csv
+12,Boys,"ACT best",400m,,"C. Newman",57.94,Queanbeyan,1980-01-01,"Jan 1980",Canberra,,act-best.csv
+12,Boys,"ACT best",800m,,"D. Adams",2:19.24,Woden,<1985,<1985,Canberra,,act-best.csv
+12,Boys,"ACT best",Discus,750g,"T. Martin",42.22,Tuggeranong,1992-02-01,"Feb 1992",Canberra,,act-best.csv
+12,Boys,"ACT best","High Jump",,"S. Crowe",1.57,Belconnen,1996-03-01,"Mar 1996",Canberra,,act-best.csv
+12,Boys,"ACT best",Javelin,400g,"T. Martin",39.90,Tuggeranong,1992-03-01,"Mar 1992",Canberra,,act-best.csv
+12,Boys,"ACT best","Long Jump",,"S. Clarke",5.56,"Weston Creek",1984-01-01,"Jan 1984",Canberra,,act-best.csv
+12,Boys,"ACT best","Shot Put",2kg,"E. Wilson",11.41,Ginninderra,2019-03-01,"Mar 2019",Canberra,,act-best.csv
+12,Boys,"ACT best","Shot Put",3kg,"Arthur Giason",8.84,Corroboree,2025-02-23,"Feb 2025",Canberra,"New record 2025",act-best.csv
+12,Boys,"ACT best","Triple Jump",,"A. Tetteh",11.24,Ginninderra,2016-03-01,"Mar 2016",Canberra,,act-best.csv
+12,Girls,"ACT best",100m,,"A. Coddington",13.09,Belconnen,2001-03-01,"Mar 2001",Canberra,,act-best.csv
+12,Girls,"ACT best",1500m,,"E. Hamilton",4:52.25,Ginninderra,2024-03-17,"Mar 2024",Canberra,,act-best.csv
+12,Girls,"ACT best","1500m Walk",,"T. Smith",7:26.94,Belconnen,1996-03-01,"Mar 1996",Canberra,,act-best.csv
+12,Girls,"ACT best",200m,,"C. Smith",26.52,Ginninderra,2018-03-01,"Mar 2018",Canberra,,act-best.csv
+12,Girls,"ACT best",400m,,"Z. Buckman",1:00.36,Queanbeyan,2001-03-01,"Mar 2001",Canberra,,act-best.csv
+12,Girls,"ACT best",800m,,"L. Molony",2:18.64,Belconnen,1981-01-01,"Jan 1981",Canberra,,act-best.csv
+12,Girls,"ACT best",Discus,750g,"G. Price",36.06,Cooma,1991-04-01,"Apr 1991",Canberra,,act-best.csv
+12,Girls,"ACT best","High Jump",,"T. Evans",1.57,"Bega Valley",2014-03-01,"Mar 2014",Canberra,,act-best.csv
+12,Girls,"ACT best",Javelin,400g,"K. Clarke",30.55,"Bega Valley",2002-03-02,"Mar 2002",Canberra,,act-best.csv
+12,Girls,"ACT best","Long Jump",,"M. Still",5.00,Queanbeyan,1984-01-01,"Jan 1984",Canberra,,act-best.csv
+12,Girls,"ACT best","Shot Put",2kg,"S. Read",12.17,Corroboree,1987-03-01,"Mar 1987",Canberra,,act-best.csv
+12,Girls,"ACT best","Triple Jump",,"A. Minns",10.63,"Weston Creek",1984-01-01,"Jan 1984",Canberra,,act-best.csv
+13,Boys,"ACT best",100m,,"S. Sheppard",11.74,Ginninderra,2001-04-01,"Apr 2001",Canberra,,act-best.csv
+13,Boys,"ACT best",1500m Walk,,"K. Clarkson",6:16.15,Ginninderra,2022-02-01,"Feb 2022",Canberra,,act-best.csv
+13,Boys,"ACT best",200m,,"S. Sheppard",23.92,Ginninderra,2001-03-01,"Mar 2001",Canberra,,act-best.csv
+13,Boys,"ACT best",400m,,"M. Beckenham",55.24,Queanbeyan,1989-03-01,"Mar 1989",Canberra,,act-best.csv
+13,Boys,"ACT best",800m,,"H. Todd",2:06.61,Ginninderra,2018-04-01,"Apr 2018",Canberra,,act-best.csv
+13,Boys,"ACT best",Discus,750g,"E. Wilson",34.97,Ginninderra,2020-02-01,"Feb 2020",Canberra,,act-best.csv
+13,Boys,"ACT best","High Jump",,"B. Deery",1.70,Gungahlin,2021-03-21,"Mar 2021",Canberra,,act-best.csv
+13,Boys,"ACT best",Javelin,600g,"K. Kouparitsas",44.10,Corroboree,2000-04-01,"Apr 2000",Canberra,,act-best.csv
+13,Boys,"ACT best","Long Jump",,"M. Beckenham",5.82,Queanbeyan,1989-03-01,"Mar 1989",Canberra,,act-best.csv
+13,Boys,"ACT best","Shot Put",3kg,"G. Mace",17.02,Ginninderra,1989-03-01,"Mar 1989",Canberra,,act-best.csv
+13,Boys,"ACT best","Triple Jump",,"B. Deery",11.93,Gungahlin,2021-03-21,"Mar 2021",Canberra,,act-best.csv
+13,Girls,"ACT best",100m,,"A. Coddington",12.74,Belconnen,2002-03-02,"Mar 2002",Canberra,,act-best.csv
+13,Girls,"ACT best",1500m,,"A. Neumaier",4:43.04,ACT,2000-04-01,"Apr 2000",Canberra,,act-best.csv
+13,Girls,"ACT best","1500m Walk",,"Z. Hunt",6:50.07,Belconnen,2011-03-01,"Mar 2011",Canberra,,act-best.csv
+13,Girls,"ACT best",200m,,"A. Leszczynska",26.18,Gungahlin,2013-04-02,"Apr 2013",Canberra,,act-best.csv
+13,Girls,"ACT best",400m,,"Z. Buckman",57.54,ACT,2002-04-02,"Apr 2002",Canberra,,act-best.csv
+13,Girls,"ACT best",800m,,"A. Neumaier",2:17.83,Woden,2000-03-01,"Mar 2000",Canberra,,act-best.csv
+13,Girls,"ACT best",Discus,750g,"S. Riley",37.30,Lanyon,1997-02-01,"Feb 1997",Canberra,,act-best.csv
+13,Girls,"ACT best","High Jump",,"T. Evans",1.67,"Bega Valley",2015-03-01,"Mar 2015",Canberra,,act-best.csv
+13,Girls,"ACT best",Javelin,400g,"K. Clarke",35.41,"Bega Valley",2003-03-01,"Mar 2003",Canberra,,act-best.csv
+13,Girls,"ACT best","Long Jump",,"E. Prince",5.16,Woden,2008-03-01,"Mar 2008",Canberra,,act-best.csv
+13,Girls,"ACT best","Shot Put",3kg,"M. Fleming",11.47,Calwell,2004-04-01,"Apr 2004",Canberra,,act-best.csv
+13,Girls,"ACT best","Triple Jump",,"A. Thompson",11.64,Queanbeyan,2012-04-01,"Apr 2012",Canberra,,act-best.csv
+14,Boys,"ACT best",100m,,"B. Hollingworth-Dessent",11.40,Mulwaree,2014-03-01,"Mar 2014",Canberra,,act-best.csv
+14,Boys,"ACT best",1500m,,"H. Todd",4:23.33,Ginninderra,2019-03-01,"Mar 2019",Canberra,,act-best.csv
+14,Boys,"ACT best","1500m Walk",,"C. Frew",6:46.66,Calwell,2015-03-01,"Mar 2015",Canberra,,act-best.csv
+14,Boys,"ACT best",200m,,"S. Sheppard",22.82,Belconnen,2002-03-02,"Mar 2002",Canberra,,act-best.csv
+14,Boys,"ACT best",400m,,"N. Perry",53.47,Calwell,2016-03-01,"Mar 2016",Canberra,,act-best.csv
+14,Boys,"ACT best",800m,,"H. Todd",2:02.02,Ginninderra,2019-03-01,"Mar 2019",Canberra,,act-best.csv
+14,Boys,"ACT best",Discus,1kg,"T. Martin",52.44,Tuggeranong,1994-03-01,"Mar 1994",Canberra,,act-best.csv
+14,Boys,"ACT best","High Jump",,"B. Halliday",1.80,Calwell,1995-03-01,"Mar 1995",Canberra,,act-best.csv
+14,Boys,"ACT best",Javelin,600g,"T. Martin",47.88,Tuggeranong,1994-03-01,"Mar 1994",Canberra,,act-best.csv
+14,Boys,"ACT best","Long Jump",,"J. Church",6.14,Woden,2015-03-01,"Mar 2015",Canberra,,act-best.csv
+14,Boys,"ACT best","Shot Put",3kg,"J. Church",16.09,Woden,2015-03-01,"Mar 2015",Canberra,,act-best.csv
+14,Boys,"ACT best","Triple Jump",,"N. Perry",12.65,Calwell,2016-03-01,"Mar 2016",Canberra,,act-best.csv
+14,Girls,"ACT best",100m,,"S. Pollard",12.26,Queanbeyan,2008-11-01,"Nov 2008",Canberra,,act-best.csv
+14,Girls,"ACT best",1500m,,"B. Reilly",4:52.72,Calwell,2011-03-01,"Mar 2011",Canberra,,act-best.csv
+14,Girls,"ACT best","1500m Walk",,"J. Strangman",7:09.64,Ginninderra,1990-03-01,"Mar 1990",Canberra,,act-best.csv
+14,Girls,"ACT best",200m,,"S. Pollard",25.84,Queanbeyan,2009-02-01,"Feb 2009",Canberra,,act-best.csv
+14,Girls,"ACT best",400m,,"B. Reilly",59.65,Calwell,2011-03-01,"Mar 2011",Canberra,,act-best.csv
+14,Girls,"ACT best",800m,,"Lara Packwood",2:15.53,"Weston Creek",2025-02-23,"Feb 2025",Canberra,,act-best.csv
+14,Girls,"ACT best",Discus,1kg,"A. Butler",37.42,Tuggeranong,1987-03-01,"Mar 1987",Canberra,,act-best.csv
+14,Girls,"ACT best","High Jump",,"C. Jamieson",1.70,"Bega Valley",2008-03-01,"Mar 2008",Canberra,,act-best.csv
+14,Girls,"ACT best",Javelin,400g,"E. Pease",39.38,Belconnen,2016-03-01,"Mar 2016",Canberra,,act-best.csv
+14,Girls,"ACT best","Long Jump",,"A. Thompson",5.79,Queanbeyan,2013-03-01,"Mar 2013",Canberra,,act-best.csv
+14,Girls,"ACT best","Shot Put",3kg,"A. Butler",11.99,Tuggeranong,1987-03-01,"Mar 1987",Canberra,,act-best.csv
+14,Girls,"ACT best","Triple Jump",,"A. Thompson",11.58,Queanbeyan,2013-03-01,"Mar 2013",Canberra,,act-best.csv
+14,Men,"ACT best","1 mile",,"Joshua Torley",4:46.08,WC,2012-01-12,"12 Jan 12",Canberra,,seniors.csv
+14,Men,"ACT best",1000m,,"Jacob Eaton",2:52.55,GIN,2020-10-24,"24 Oct 20",Canberra,"Event added Aug 2020",seniors.csv
+14,Men,"ACT best",100m,,"Sioeli Hifo",10.93,WAC,2024-12-07,"7 Dec 24",Brisbane,,seniors.csv
+14,Men,"ACT best",1500m,,"Tomas Palfrey",4:13.52,NCG,2016-12-04,"4 Dec 16",Canberra,,seniors.csv
+14,Men,"ACT best","1500m Walk",,"Kodi Clarkson",6:22.00,GIN,2021-12-02,"2 Dec 21",Canberra,,seniors.csv
+14,Men,"ACT best",200m,,"Sioeli Hifo",22.61,WAC,2024-12-08,"8 Dec 24",Brisbane,,seniors.csv
+14,Men,"ACT best","200m Hurdles",,"Joshua Kalozi",29.47,GM,2018-11-03,"3 Nov 18",Canberra,"10 flights since Apr 1998",seniors.csv
+14,Men,"ACT best","3000m Walk",,"Kodi Clarkson",13:07.93,GIN,2021-12-09,"9 Dec 21",Sydney,,seniors.csv
+14,Men,"ACT best","4 x 100m",,,48.80,ACT,2021-04-14,"14 Apr 21",Sydney,,seniors.csv
+14,Men,"ACT best","4 x 200m",,,1:44.70,WC,1986-12-06,"6 Dec 86",,,seniors.csv
+14,Men,"ACT best","4 x 400m",,,4:03.50,WV,1983-11-05,"5 Nov 83",,,seniors.csv
+14,Men,"ACT best","4 x 800m",,,9:37.20,WC,1986-12-06,"6 Dec 86",,,seniors.csv
+14,Men,"ACT best",400m,,"Matthew Beckenham",51.60,QBN,1990-02-25,"25 Feb 90",,,seniors.csv
+14,Men,"ACT best",800m,,"Geoff Davidson",2:02.32,WC,1997-03-22,"22 Mar 97",Brisbane,,seniors.csv
+14,Men,"ACT best","90m Hurdles",,"Byron Hollingworth-Dessent",12.42,GM,2013-12-07,"7 Dec 13",Townsville,,seniors.csv
+14,Men,"ACT best",Discus,1kg,"Terry Martin",55.68,SCT,1994-03-19,"19 Mar 94",,,seniors.csv
+14,Men,"ACT best",Hammer,3kg,"Ruan Ferdinand Hennig",55.18,NCG,2018-12-08,"8 Dec 18",Cairns,,seniors.csv
+14,Men,"ACT best","High Jump",,"Chris Butler",1.80,NC,1994-03-19,"19 Mar 94",,,seniors.csv
+14,Men,"ACT best",Javelin,600g,"Richard Yu",48.80,NCG,2022-12-02,"2 Dec 22",Canberra,,seniors.csv
+14,Men,"ACT best","Long Jump",,"Blake Deery",6.33,NCG,2021-12-18,"18 Dec 21",Canberra,,seniors.csv
+14,Men,"ACT best","Pole Vault",,"Itamar Oren",3.00,NCG,2017-12-08,"8 Dec 17",Adelaide,,seniors.csv
+14,Men,"ACT best","Shot Put",3kg,"Gregory Mace",19.70,NC,1990-01-03,"3 Jan 90",,,seniors.csv
+14,Men,"ACT best","Triple Jump",,"Matthew Beckenham",12.77,QBN,1990-02-24,"24 Feb 90",,,seniors.csv
+14,Women,"ACT best","1 mile",,"Olivia Galang",5:14.57,SCT,2023-03-08,"8 Mar 23",Canberra,,seniors.csv
+14,Women,"ACT best",1000m,,"April Lisle",2:55.55,NCG,2024-08-18,"18 Aug 24",Canberra,"Event added Aug 2020",seniors.csv
+14,Women,"ACT best",100m,,"Stephanie Pollard",12.28,QBN,2008-10-18,"18 Oct 08",Canberra,,seniors.csv
+14,Women,"ACT best",1500m,,"Keely Small",4:25.78,WC,2014-12-07,"7 Dec 14",Adelaide,,seniors.csv
+14,Women,"ACT best","1500m Walk",,"Belinda Cole",6:49.19,SCT,1995-03-25,"25 Mar 95",Adelaide,,seniors.csv
+14,Women,"ACT best",200m,,"Anne Minns",25.46,WC,1986-02-23,"23 Feb 86",,,seniors.csv
+14,Women,"ACT best","200m Hurdles",,"Aisha Shave",29.91,GIN,2022-12-09,"9 Dec 22",Adelaide,"10 flights since Apr 1998",seniors.csv
+14,Women,"ACT best","3000m Walk",,"Laura Catherine Burns",15:07.31,NCG,2017-04-02,"2 Apr 17",Sydney,,seniors.csv
+14,Women,"ACT best","4 x 100m",,,51.17,ACT,2024-12-07,"7 Dec 24",Brisbane,,seniors.csv
+14,Women,"ACT best","4 x 200m",,,1:54.60,SCT,1996-11-02,"2 Nov 96",,,seniors.csv
+14,Women,"ACT best","4 x 400m",,,4:25.10,NC,1987-03-07,"7 Mar 87",,,seniors.csv
+14,Women,"ACT best","4 x 800m",,,10:55.60,NC,1987-11-02,"2 Nov 87",,,seniors.csv
+14,Women,"ACT best",400m,,"Anne Minns",57.22,WC,1986-02-22,"22 Feb 86",,,seniors.csv
+14,Women,"ACT best",800m,,"Keely Small",2:10.01,WC,2014-12-05,"5 Dec 14",Adelaide,,seniors.csv
+14,Women,"ACT best","80m Hurdles",,"Honey Proudfoot",12.85,WC,2019-12-08,"8 Dec 19",Perth,,seniors.csv
+14,Women,"ACT best",Discus,1kg,"Susan Read",36.26,NC,1989-01-18,"18 Jan 89",,,seniors.csv
+14,Women,"ACT best",Hammer,3kg,"Minaiyah McBeth",34.02,NCG,2024-12-14,"14 Dec 24",Canberra,,seniors.csv
+14,Women,"ACT best","High Jump",,"Erika Vredenbregt",1.70,NCG,2009-12-05,"5 Dec 09",Hobart,,seniors.csv
+14,Women,"ACT best",Javelin,400g,"Karen Clarke",35.8,BEG,2003-11-29,"29 Nov 03",Canberra,,seniors.csv
+14,Women,"ACT best","Long Jump",,"Erika Vredenbregt",5.33,NCG,2008-11-28,"28 Nov 08",Canberra,,seniors.csv
+14,Women,"ACT best","Pole Vault",,"Zyanya Holloway",2.70,WC,2021-08-01,"1 Aug 21",Canberra,,seniors.csv
+14,Women,"ACT best","Shot Put",3kg,"Kris Britt",12.69,CU,1997-02-16,"16 Feb 97",,,seniors.csv
+14,Women,"ACT best","Triple Jump",,"Claire Roberts",11.45,NCG,2016-12-17,"17 Dec 16",Woden,,seniors.csv
+15,Boys,"ACT best",100m,,"M. Berry",11.04,Ginninderra,2007-11-04,"Nov 2007",Canberra,,act-best.csv
+15,Boys,"ACT best",1500m,,"A. Camp-Liddiard",4:14.40,Ginninderra,2021-03-21,"Mar 2021",Canberra,,act-best.csv
+15,Boys,"ACT best","1500m Walk",,"C. Frew",6:22.26,Calwell,2016-02-01,"Feb 2016",Canberra,,act-best.csv
+15,Boys,"ACT best",200m,,"M. Berry",22.10,Ginninderra,2016-02-01,"Feb 2016",Canberra,,act-best.csv
+15,Boys,"ACT best",400m,,"M. Fahey",52.39,Lanyon,2000-03-01,"Mar 2000",Canberra,,act-best.csv
+15,Boys,"ACT best",800m,,"C. Tucker",1:58.84,Tuggeranong,1994-04-01,"Apr 1994",Canberra,,act-best.csv
+15,Boys,"ACT best",Discus,1kg,"T. Martin",59.32,Tuggeranong,1995-02-01,"Feb 1995",Canberra,,act-best.csv
+15,Boys,"ACT best","High Jump",,"C. Thompson",1.87,Queanbeyan,1996-03-01,"Mar 1996",Canberra,,act-best.csv
+15,Boys,"ACT best",Javelin,700g,"I. Oren",51.50,ACT,2019-04-01,"Apr 2019",Canberra,,act-best.csv
+15,Boys,"ACT best","Long Jump",,"M. Beckenham",6.72,Queanbeyan,1991-04-01,"Apr 1991",Canberra,,act-best.csv
+15,Boys,"ACT best","Shot Put",4kg,"G. Mace",16.58,Ginninderra,1991-01-01,"Jan 1991",Canberra,,act-best.csv
+15,Boys,"ACT best","Triple Jump",,"Y. Adeyemi",13.03,Woden,2016-02-01,"Feb 2016",Canberra,,act-best.csv
+15,Girls,"ACT best",100m,,"M. Breen",12.46,Tuggeranong,2004-11-01,"Nov 2004",Canberra,,act-best.csv
+15,Girls,"ACT best",1500m,,"K. Small",4:41.02,Calwell,2016-02-01,"Feb 2016",Canberra,,act-best.csv
+15,Girls,"ACT best","1500m Walk",,"E. Hosking",6:49.97,Woden,2010-03-01,"Mar 2010",Canberra,,act-best.csv
+15,Girls,"ACT best",200m,,"M. Breen",25.64,Tuggeranong,2005-04-01,"Apr 2005",Canberra,,act-best.csv
+15,Girls,"ACT best",400m,,"A. Blackburn",56.61,Boomanulla,2004-04-01,"Apr 2004",Canberra,,act-best.csv
+15,Girls,"ACT best",800m,,"K. Small",2:12.24,Woden,2016-02-01,"Feb 2016",Canberra,,act-best.csv
+15,Girls,"ACT best",Discus,1kg,"C. Blyton",35.84,Cooma,1991-03-01,"Mar 1991",Canberra,,act-best.csv
+15,Girls,"ACT best","High Jump",,"C. Jamieson",1.70,"Bega Valley",2009-03-01,"Mar 2009",Canberra,,act-best.csv
+15,Girls,"ACT best",Javelin,500g,"E. Pease",40.22,Belconnen,2017-03-01,"Mar 2017",Canberra,,act-best.csv
+15,Girls,"ACT best","Long Jump",,"N. Burgess",5.52,Cooma,2007-03-01,"Mar 2007",Canberra,,act-best.csv
+15,Girls,"ACT best","Shot Put",3kg,"J. Jarvis",12.61,Mulwaree,2019-02-01,"Feb 2019",Canberra,,act-best.csv
+15,Girls,"ACT best","Triple Jump",,"N. Burgess",11.33,Cooma,2007-03-01,"Mar 2007",Canberra,,act-best.csv
+16,Boys,"ACT best",100m,,"E. Nketia",11.03,Woden,2017-03-01,"Mar 2017",Canberra,,act-best.csv
+16,Boys,"ACT best",1500m,,"J. Davill",4:16.28,Ginninderra,2019-03-01,"Mar 2019",Canberra,,act-best.csv
+16,Boys,"ACT best","1500m Walk",,"C. Frew",6:09.33,Calwell,2017-03-01,"Mar 2017",Canberra,,act-best.csv
+16,Boys,"ACT best",200m,,"M. Berry",21.58,Ginninderra,2022-02-01,"Feb 2022",Canberra,,act-best.csv
+16,Boys,"ACT best",400m,,"H. Todd",49.95,Ginninderra,2021-03-21,"Mar 2021",Canberra,,act-best.csv
+16,Boys,"ACT best",800m,,"A. Camp-Liddiard",2:02.30,Ginninderra,2022-02-01,"Feb 2022",Canberra,,act-best.csv
+16,Boys,"ACT best",Discus,1kg,"A. Taumasina",52.07,Calwell,2018-03-01,"Mar 2018",Canberra,,act-best.csv
+16,Boys,"ACT best","High Jump",,"K. Allan",1.97,Gungahlin,2015-03-01,"Mar 2015",Canberra,,act-best.csv
+16,Boys,"ACT best",Javelin,700g,"J. Kremer",53.13,Mulwaree,2016-03-01,"Mar 2016",Canberra,,act-best.csv
+16,Boys,"ACT best","Long Jump",,"J. Kalozi",6.47,Goulburn,2021-03-21,"Mar 2021",Canberra,,act-best.csv
+16,Boys,"ACT best","Shot Put",4kg,"S. Fraser",14.30,Ginninderra,2017-03-01,"Mar 2017",Canberra,,act-best.csv
+16,Boys,"ACT best","Triple Jump",,"D. Bartholomaeus",13.46,Woden,2019-03-01,"Mar 2019",Canberra,,act-best.csv
+16,Girls,"ACT best",100m,,"M. Sturgiss",12.60,Ginninderra,2018-03-01,"Mar 2018",Canberra,,act-best.csv
+16,Girls,"ACT best",1500m,,"O. O'Donnell",4:42.00,Tuggeranong,2016-02-01,"Feb 2016",Canberra,,act-best.csv
+16,Girls,"ACT best","1500m Walk",,"Z. Hunt",6:48.67,Belconnen,2014-03-01,"Mar 2014",Canberra,,act-best.csv
+16,Girls,"ACT best",200m,,"G. Brennan",25.58,Woden,2016-02-01,"Feb 2016",Canberra,,act-best.csv
+16,Girls,"ACT best",400m,,"C. Hopkins",59.68,Queanbeyan,2014-03-01,"Mar 2014",Canberra,,act-best.csv
+16,Girls,"ACT best",800m,,"O. O'Donnell",2:15.20,Tuggeranong,2016-02-01,"Feb 2016",Canberra,,act-best.csv
+16,Girls,"ACT best",Discus,1kg,"L. Pease",34.26,Belconnen,2016-02-01,"Feb 2016",Canberra,,act-best.csv
+16,Girls,"ACT best","High Jump",,"J. Alley",1.65,Woden,2018-03-01,"Mar 2018",Canberra,,act-best.csv
+16,Girls,"ACT best",Javelin,500g,"K. Woolley-Blain",44.26,"Bega Valley",2018-03-01,"Mar 2018",Canberra,,act-best.csv
+16,Girls,"ACT best","Long Jump",,"G. Brennan",6:01,Woden,2016-02-01,"Feb 2016",Canberra,,act-best.csv
+16,Girls,"ACT best","Shot Put",3kg,"K. Woolley-Blain",11.94,"Bega Valley",2018-03-01,"Mar 2018",Canberra,,act-best.csv
+16,Girls,"ACT best","Triple Jump",,"A. Thompson",11.56,Queanbeyan,2015-03-01,"Mar 2015",Canberra,,act-best.csv
+16,Men,"ACT best","1 mile",,"Tomas Palfrey",4:22.54,NCG,2018-12-22,"22 Dec 18",Sydney,,seniors.csv
+16,Men,"ACT best",1000m,,"Hayden Todd",2:25.70,GIN,2020-10-24,"24 Oct 20",Canberra,"Event added Aug 2020",seniors.csv
+16,Men,"ACT best",100m,,"Edward Osei-Nketia",10.63,NCG,2016-12-03,"3 Dec 16",Canberra,,seniors.csv
+16,Men,"ACT best","100m Hurdles",,"Joshua Kalozi",13.03,GM,2020-12-06,"6 Dec 20",Sydney,,seniors.csv
+16,Men,"ACT best",1500m,,"Kieran Shepherd",3:52.15,WAC,2024-11-30,"30 Nov 24",Canberra,,seniors.csv
+16,Men,"ACT best","1500m Walk",,"Wayne McEwen",5:47.70,WH,1994-03-27,"27 Mar 94",Hobart,,seniors.csv
+16,Men,"ACT best","2000m Steeple",,"Mitchell Lamb",6:00.10,WH,2005-12-08,"8 Dec 05",Sydney,,seniors.csv
+16,Men,"ACT best",200m,,"Max Berry",21.60,GIN,2021-11-06,"6 Nov 21",Canberra,,seniors.csv
+16,Men,"ACT best","200m Hurdles",,"Joshua Kalozi",25.25,GM,2020-12-03,"3 Dec 20",Sydney,"10 flights since Apr 1998",seniors.csv
+16,Men,"ACT best",3000m,,"Joshua Torley",8:25.31,WC,2014-11-08,"8 Nov 14",Sydney,,seniors.csv
+16,Men,"ACT best","3000m Walk",,"Kodi Clarkson",12:00.10,GIN,2023-12-09,"9 Dec 23",Perth,,seniors.csv
+16,Men,"ACT best","4 x 100m",,,42.38,ACT,2023-12-09,"9 Dec 23",Perth,,seniors.csv
+16,Men,"ACT best","4 x 1500m",,,17:56.40,NC,1993-01-31,"31 Jan 93",,,seniors.csv
+16,Men,"ACT best","4 x 200m",,,1:34.70,BW,1985-11-23,"23 Nov 85",,,seniors.csv
+16,Men,"ACT best","4 x 400m",,,3:33.04,ACT,1994-03-27,"27 Mar 94",,,seniors.csv
+16,Men,"ACT best","4 x 800m",,,8:51.80,WC,1987-11-28,"28 Nov 87",,,seniors.csv
+16,Men,"ACT best",400m,,"Brendan Watt",48.46,NCG,2003-11-29,"29 Nov 03",Canberra,,seniors.csv
+16,Men,"ACT best",800m,,"Hayden Todd",1:52.72,GIN,2020-12-19,"19 Dec 20",Sydney,,seniors.csv
+16,Men,"ACT best",Discus,1kg,"Terry Martin",69.78,SCT,1996-03-03,"3 Mar 96",,,seniors.csv
+16,Men,"ACT best",Hammer,4kg,"Ruan Ferdinand Hennig",60.65,NCG,2020-11-14,"14 Nov 20",Canberra,,seniors.csv
+16,Men,"ACT best",Heptathlon,,"Matthew Beckenham",5116,QBN,1992-03-16,"16 Mar 92",Canberra,,seniors.csv
+16,Men,"ACT best","High Jump",,"Joe Fishburn",1.95,ACT,1992-03-14,"14 Mar 92",Canberra,,seniors.csv
+16,Men,"ACT best","Javelin",700g,"Tim Curran",62.39,SCT,1999-12-12,"12 Dec 99",Sydney,,seniors.csv
+16,Men,"ACT best","Long Jump",,"Matthew Beckenham",6.91,QBN,1992-01-27,"27 Jan 92",,,seniors.csv
+16,Men,"ACT best","Pole Vault",,"Simon Yung",4.00,NCG,2016-11-19,"19 Nov 16",Canberra,,seniors.csv
+16,Men,"ACT best","Shot Put",4kg,"Gregory Mace",18.25,NC,1991-12-07,"7 Dec 91",,,seniors.csv
+16,Men,"ACT best","Triple Jump",,"Shane Castlereagh",13.74,WH,1994-03-26,"26 Mar 94",Hobart,,seniors.csv
+16,Women,"ACT best","1 mile",,"Keely Small",4:54.46,WC,2015-12-17,"17 Dec 15",Bankstown,,seniors.csv
+16,Women,"ACT best",1000m,,"Jaime Brennan",2:53.84,NCG,2020-10-24,"24 Oct 20",Canberra,"Event added Aug 2020",seniors.csv
+16,Women,"ACT best",100m,,"Melissa Breen",11.88,WH,2005-11-30,"30 Nov 05",Melbourne,,seniors.csv
+16,Women,"ACT best",1500m,,"Emily Brichacek",4:19.89,SCT,2005-10-22,"22 Oct 05",Canberra,,seniors.csv
+16,Women,"ACT best","1500m Walk",,"Jillian Hosking",6:31.67,SCT,2002-12-08,"8 Dec 02",Hobart,,seniors.csv
+16,Women,"ACT best","2000m Steeple",,"Nicola Torley",7:18.02,WC,2011-12-16,"16 Dec 11",Canberra,,seniors.csv
+16,Women,"ACT best",200m,,"Aisha Shave",24.04,GIN,2024-12-08,"8 Dec 24",Brisbane,,seniors.csv
+16,Women,"ACT best","200m Hurdles",,"Aisha Shave",27.42,GIN,2024-12-06,"6 Dec 24",Brisbane,"10 flights since Apr 1998",seniors.csv
+16,Women,"ACT best",3000m,,"Emily Brichacek",9:08.93,SCT,2005-10-29,"29 Oct 05",Canberra,,seniors.csv
+16,Women,"ACT best","3000m Walk",,"Gabby Hunt",13:49.92,NCG,2015-12-06,"6 Dec 15","Albert Park",,seniors.csv
+16,Women,"ACT best","4 x 100m",,,50.13,NCG,2003-12-08,"8 Dec 03",Hobart,,seniors.csv
+16,Women,"ACT best","4 x 1500m",,,21:51.60,SCT,1980-01-26,"26 Jan 80",,,seniors.csv
+16,Women,"ACT best","4 x 200m",,,1:46.07,ACT,2013-03-17,"17 Mar 13",Perth,,seniors.csv
+16,Women,"ACT best","4 x 400m",,,4:00.00,WV,1983-02-13,"13 Feb 83",,,seniors.csv
+16,Women,"ACT best","4 x 800m",,,10:13.60,WC,1983-01-29,"29 Jan 83",,,seniors.csv
+16,Women,"ACT best",400m,,"Zoe Buckman",55.37,QBN,2003-11-29,"29 Nov 03",Canberra,,seniors.csv
+16,Women,"ACT best",800m,,"Keely Small",2:08.17,WC,2015-12-06,"6 Dec 15",Melbourne,,seniors.csv
+16,Women,"ACT best","90m Hurdles",,"Aisha Shave",13.09,GIN,2024-04-16,"16 Apr 24",Adelaide,"76.2cm since Oct 1999",seniors.csv
+16,Women,"ACT best",Discus,1kg,"Lisa-Marie Vizaniari",48.56,NCG,1987-12-12,"12 Dec 87",Brisbane,,seniors.csv
+16,Women,"ACT best",Hammer,3kg,"Mia Zasiadczyk",45.78,NCG,2023-08-20,"20 Aug 23",Canberra,,seniors.csv
+16,Women,"ACT best",Hammer,4kg,"Sally Chapman",42.60,QBN,2002-11-16,"16 Nov 02",Canberra,"Historical record",seniors.csv
+16,Women,"ACT best",Heptathlon,,"Nicole Muir",5044,NCG,1994-01-29,"29 Jan 94",,,seniors.csv
+16,Women,"ACT best","High Jump",,"Shannon Nutt",1.75,NCG,2014-10-26,"26 Oct 14",Canberra,,seniors.csv
+16,Women,"ACT best",Javelin,500g,"Emily Pease",40.07,NCG,2017-03-28,"28 Mar 17",Sydney,,seniors.csv
+16,Women,"ACT best",Javelin,600g,"Amanda Butler",44.54,SCT,1988-12-12,"12 Dec 88",Canberra,"Historical record",seniors.csv
+16,Women,"ACT best","Long Jump",,"Andrea Thompson",5.93,QBN,2013-11-02,"2 Nov 13",Canberra,,seniors.csv
+16,Women,"ACT best","Pole Vault",,"Zyanya Holloway",3.35,WC,2023-12-08,"8 Dec 23",Perth,,seniors.csv
+16,Women,"ACT best","Shot Put",3kg,"Rebecca Howarth",14.32,NCG,2024-12-07,"7 Dec 24",Brisbane,,seniors.csv
+16,Women,"ACT best","Shot Put",4kg,"Lisa-Marie Vizaniari",14.92,NC,1987-07-05,"5 Jul 87",Vancouver,"Historical record",seniors.csv
+16,Women,"ACT best","Triple Jump",,"Eloise Millington",12.16,ACT,2016-12-03,"3 Dec 16",AIS,,seniors.csv
+17,Boys,"ACT best",100m,,"Aydin Ayan",11.22,"North Canberra-Gungahlin",2025-02-23,"Feb 2025",Canberra,,act-best.csv
+17,Boys,"ACT best",1500m,,"Oliver Barker",4:08.17,Ginninderra,2025-02-23,"Feb 2025",Canberra,,act-best.csv
+17,Boys,"ACT best","1500m Walk",,"C. Frew",5.50.5,Calwell,2018-03-01,"Mar 2018",Canberra,,act-best.csv
+17,Boys,"ACT best",200m,,"Aydin Ayan",22.44,"North Canberra-Gungahlin",2025-02-23,"Feb 2025",Canberra,,act-best.csv
+17,Boys,"ACT best",400m,,"Aydin Ayan",49.84,"North Canberra-Gungahlin",2025-02-23,"Feb 2025",Canberra,,act-best.csv
+17,Boys,"ACT best",800m,,"H. McKenzie",1.58.35,Calwell,2015-03-15,"Mar 2015",Canberra,,act-best.csv
+17,Boys,"ACT best",Discus,1.5kg,"E. Ayodele",50.14,"North Canberra-Gungahlin",2022-02-01,"Feb 2022",Canberra,,act-best.csv
+17,Boys,"ACT best","High Jump",,"V. Hauge-Duval",1.95,Calwell,2018-12-18,"Dec 2018",Canberra,,act-best.csv
+17,Boys,"ACT best",Javelin,700g,"J. Kremer",61.48,Mulwaree,2017-03-17,"Mar 2017",Canberra,,act-best.csv
+17,Boys,"ACT best","Long Jump",,"R. Allen",6.77,Gungahlin,2014-03-14,"Mar 2014",Canberra,,act-best.csv
+17,Boys,"ACT best","Shot Put",5kg,"Blake Deery",14.71,"North Canberra-Gungahlin",2025-02-23,"Feb 2025",Canberra,,act-best.csv
+17,Boys,"ACT best","Triple Jump",,"E. Lukowski",14.03,Woden,2018-03-18,"Mar 2018",Canberra,,act-best.csv
+17,Girls,"ACT best",100m,,"I. Ajulo",12.41,Ginninderra,2021-03-21,"Mar 2021",Canberra,,act-best.csv
+17,Girls,"ACT best",1500m,,"Astrid Evans",4:48.45,"Weston Creek",2025-02-23,"Feb 2025",Canberra,,act-best.csv
+17,Girls,"ACT best","1500m Walk",,"Z. Hunt",6:38.47,Belconnen,2015-03-01,"Mar 2015",Canberra,,act-best.csv
+17,Girls,"ACT best",200m,,"A. Thompson",25.51,Queanbeyan,2016-03-01,"Mar 2016",Canberra,,act-best.csv
+17,Girls,"ACT best",400m,,"C. Hopkins",58.77,Queanbeyan,2015-03-01,"Mar 2015",Canberra,,act-best.csv
+17,Girls,"ACT best",800m,,"J. Brennan",2:17.87,"North Canberra-Gungahlin",2022-02-01,"Feb 2022",Canberra,,act-best.csv
+17,Girls,"ACT best",Discus,1kg,"T. Grady",37.34,Calwell,2015-03-01,"Mar 2015",Canberra,,act-best.csv
+17,Girls,"ACT best","High Jump",,"J. Alley",1.70,Woden,2018-12-15,"Dec 2018",Canberra,,act-best.csv
+17,Girls,"ACT best",Javelin,500g,"K. Woolley-Blain",41.52,"Bega Valley",2019-03-01,"Mar 2019",Canberra,,act-best.csv
+17,Girls,"ACT best","Long Jump",,"G. Brennan",5.78,Woden,2017-03-01,"Mar 2017",Canberra,,act-best.csv
+17,Girls,"ACT best","Shot Put",3kg,"E. Pease",11.96,Belconnen,2019-02-01,"Feb 2019",Canberra,,act-best.csv
+17,Girls,"ACT best","Triple Jump",,"E. Millington",11.63,Woden,2018-03-01,"Mar 2018",Canberra,,act-best.csv
+18,Men,"ACT best","1 mile",,"Cameron Myers",3:55.44,WC,2023-02-23,"23 Feb 23",Melbourne,,seniors.csv
+18,Men,"ACT best",1000m,,"Tomas Palfrey",2:25.60,NCG,2020-08-02,"2 Aug 20",Canberra,"Event added Aug 2020",seniors.csv
+18,Men,"ACT best",100m,,"Edward Osei-Nketia",10.51,NCG,2017-12-09,"9 Dec 17",Adelaide,,seniors.csv
+18,Men,"ACT best","110m Hurdles",,"Joshua Kalozi",13.36,GM,2022-06-09,"9 Jun 22",Mackay,,seniors.csv
+18,Men,"ACT best",1500m,,"Cameron Myers",3:38.02,WC,2023-04-01,"1 Apr 23",Brisbane,,seniors.csv
+18,Men,"ACT best","1500m Walk",,"Garry Vogler",5:45.30,NC,1992-01-22,"22 Jan 92",,,seniors.csv
+18,Men,"ACT best","2000m Steeple",,"Stuart Mee",5:50.70,SCT,1983-12-21,"21 Dec 83",,,seniors.csv
+18,Men,"ACT best",200m,,"Edward Osei-Nketia",21.40,NCG,2017-12-10,"10 Dec 17",Adelaide,,seniors.csv
+18,Men,"ACT best",3000m,,"Cameron Myers",7:52.06,WC,2023-03-11,"11 Mar 23",Sydney,,seniors.csv
+18,Men,"ACT best","3000m Walk",,"Kodi Clarkson",12:00.10,GIN,2023-12-09,"9 Dec 23",Perth,,seniors.csv
+18,Men,"ACT best","4 x 100m",,,42.38,ACT,2023-12-09,"9 Dec 23",Perth,,seniors.csv
+18,Men,"ACT best","4 x 1500m",,,17:47.40,WV,1980-01-26,"26 Jan 80",,,seniors.csv
+18,Men,"ACT best","4 x 200m",,,1:27.90,SCT,1995-03-19,"19 Mar 95",,,seniors.csv
+18,Men,"ACT best","4 x 400m",,,3:18.75,ACT,1985-03-17,"17 Mar 85",,,seniors.csv
+18,Men,"ACT best","4 x 800m",,,8:15.20,WC,1989-10-22,"22 Oct 89",,,seniors.csv
+18,Men,"ACT best",400m,,"Jonathon Bessell",47.57,WV,1986-03-09,"9 Mar 86",Hobart,,seniors.csv
+18,Men,"ACT best","400m Hurdles",,"Matt Beckenham",52.09,QBN,1993-12-11,"11 Dec 93",Canberra,,seniors.csv
+18,Men,"ACT best","5000m Walk",,"Owen Toyne",20:39.06,GIN,2023-02-24,"24 Feb 23",Canberra,"Event added Jan 2021",seniors.csv
+18,Men,"ACT best",800m,,"Hayden Todd",1:50.14,GIN,2022-03-29,"29 Mar 22",Sydney,,seniors.csv
+18,Men,"ACT best",Decathlon,,"Colby Eddowes",6885,SCT,2019-03-16,"16 Mar 19",Hobart,,seniors.csv
+18,Men,"ACT best",Discus,1.5kg,"Elijah Wilson",58.71,GIN,2024-12-06,"6 Dec 24",Brisbane,,seniors.csv
+18,Men,"ACT best",Hammer,5kg,"Angus White",65.11,ACT,2015-10-24,"24 Oct 15",Canberra,,seniors.csv
+18,Men,"ACT best","High Jump",,"Joe Fishburn",2.11,WH,1994-03-27,"27 Mar 94",Hobart,,seniors.csv
+18,Men,"ACT best",Javelin,700g,"Mark Chapman",66.36,QBN,2002-10-12,"12 Oct 02",Sydney,,seniors.csv
+18,Men,"ACT best","Long Jump",,"Angus Gould",7.27,NCG,2011-08-14,"14 Aug 11",,,seniors.csv
+18,Men,"ACT best","Pole Vault",,"Colby Eddowes",4.40,SCT,2019-12-07,"7 Dec 19",Perth,,seniors.csv
+18,Men,"ACT best","Shot Put",5kg,"Elijah Wilson",19.35,GIN,2024-11-30,"30 Nov 24",Canberra,,seniors.csv
+18,Men,"ACT best","Triple Jump",,"John Howell",14.66,NC,1969-03-22,"22 Mar 69",,,seniors.csv
+18,Women,"ACT best","1 mile",,"Emily Brichacek",4:44.85,SCT,2006-01-17,"17 Jan 06",Canberra,,seniors.csv
+18,Women,"ACT best",1000m,,"Jaime Brennan",2:53.84,NCG,2020-10-24,"24 Oct 20",Canberra,"Event added Aug 2020",seniors.csv
+18,Women,"ACT best",100m,,"Melissa Breen",11.74,WH,2007-12-09,"9 Dec 07",Sydney,,seniors.csv
+18,Women,"ACT best","100m Hurdles",,"Aisha Shave",13.42,GIN,2025-04-06,"6 Apr 25",Perth,"76.2cm since Oct 1999",seniors.csv
+18,Women,"ACT best",1500m,,"Keely Small",4:18.54,WC,2017-02-04,"4 Feb 17",Sydney,,seniors.csv
+18,Women,"ACT best","1500m Walk",,"Jillian Hosking",6:20.85,SCT,2004-12-04,"4 Dec 04",Canberra,,seniors.csv
+18,Women,"ACT best","2000m Steeple",,"Marnie Ponton",6:53.31,WB,2001-12-08,"8 Dec 01",Melbourne,,seniors.csv
+18,Women,"ACT best",200m,,"Anne Minns",24.03,WC,1989-03-05,"5 Mar 89",Canberra,,seniors.csv
+18,Women,"ACT best",3000m,,"Emily Brichacek",9:06.41,SCT,2006-11-11,"11 Nov 06",Sydney,,seniors.csv
+18,Women,"ACT best","3000m Walk",,"Jillian Hosking",13:42.50,SCT,2004-03-12,"12 Mar 04",Canberra,,seniors.csv
+18,Women,"ACT best","4 x 100m",,,47.86,ACT,2024-12-06,"6 Dec 24",Brisbane,,seniors.csv
+18,Women,"ACT best","4 x 1500m",,,21:20.90,SCT,1980-01-26,"26 Jan 80",,,seniors.csv
+18,Women,"ACT best","4 x 200m",,,1.47.00,STW,1983-01-29,"29 Jan 83",,,seniors.csv
+18,Women,"ACT best","4 x 400m",,,3:50.08,ACT,2005-12-11,"11 Dec 05",Sydney,,seniors.csv
+18,Women,"ACT best","4 x 800m",,,10:13.60,WC,1983-01-29,"29 Jan 83",,,seniors.csv
+18,Women,"ACT best",400m,,"Angeline Blackburn",54.03,SCT,2006-08-16,"16 Aug 06",Beijing,,seniors.csv
+18,Women,"ACT best","400m Hurdles",,"Lauren Boden",58.19,NCG,2005-07-14,"14 Jul 05",Marrakech,,seniors.csv
+18,Women,"ACT best","5000m Walk",,"Gabby Hunt",24:58.82,NCG,2016-03-11,"11 Mar 16",Perth,"Event added Jan 2021",seniors.csv
+18,Women,"ACT best",800m,,"Keely Small",2:00.81,WC,2018-04-12,"12 Apr 18","Gold Coast",,seniors.csv
+18,Women,"ACT best",Discus,1kg,"Lisa-Marie Vizaniari",57.92,NC,1989-09-10,"10 Sep 89",Barcelona,,seniors.csv
+18,Women,"ACT best",Hammer,3kg,"Kara Baker",54.07,WC,2015-03-01,"1 Mar 15",Canberra,,seniors.csv
+18,Women,"ACT best",Hammer,4kg,"Sally Chapman",51.51,QBN,2004-12-11,"11 Dec 04",Sydney,"Historical record",seniors.csv
+18,Women,"ACT best",Heptathlon,,"Lauren Boden",5106,NCG,2005-01-15,"15 Jan 05",Canberra,,seniors.csv
+18,Women,"ACT best","High Jump",,"Robyn Sluyters",1.78,SCT,1981-12-05,"5 Dec 81",,,seniors.csv
+18,Women,"ACT best",Javelin,500g,"Kiarna Woolley-Blain",49.77,BV,2018-12-16,"16 Dec 18",Geelong,,seniors.csv
+18,Women,"ACT best","Long Jump",,"Lauren Boden",6.24,NCG,2005-12-09,"9 Dec 05",Canberra,,seniors.csv
+18,Women,"ACT best","Pole Vault",,"Zyanya Holloway",3.41,WC,2024-02-18,"18 Feb 24",Canberra,,seniors.csv
+18,Women,"ACT best","Shot Put",3kg,"Rebecca Howarth",14.32,NCG,2024-12-07,"7 Dec 24",Brisbane,,seniors.csv
+18,Women,"ACT best","Shot Put",4kg,"Lisa-Marie Vizaniari",16.14,NC,1988-10-29,"29 Oct 88",Canberra,"Historical record",seniors.csv
+18,Women,"ACT best","Triple Jump",,"Elizabeth Dalton",12.57,QBN,2003-03-22,"22 Mar 03",Sydney,,seniors.csv
+20,Men,"ACT best","1 mile",,"Cameron Myers",3:55.44,WC,2023-02-23,"23 Feb 23",Melbourne,,seniors.csv
+20,Men,"ACT best","10000m Walk",,"Owen Toyne",42:13.86,GIN,2024-01-28,"28 Jan 24",Canberra,"Event added Jan 2021",seniors.csv
+20,Men,"ACT best",1000m,,"Cameron Myers",2:17.25,WC,2025-06-07,"7 Jun 25",Zofingen,"Event added Aug 2020",seniors.csv
+20,Men,"ACT best",100m,,"Edward Osei-Nketia",10.19,GIN,2019-04-06,"6 Apr 19",Sydney,,seniors.csv
+20,Men,"ACT best","110m Hurdles",,"Colby Eddowes",14.42,SCT,2021-06-05,"5 Jun 21","Gold Coast",IAAF-1.067m,seniors.csv
+20,Men,"ACT best",1500m,,"Cameron Myers",3:29.80,WC,2025-06-24,"24 Jun 25",Ostrava-Vítkovice,,seniors.csv
+20,Men,"ACT best","1500m Walk",,"Garry Vogler",5:45.30,NC,1992-01-22,"22 Jan 92",,,seniors.csv
+20,Men,"ACT best",200m,,"Edward Osei-Nketia",20.76,GIN,2019-01-28,"28 Jan 19",Canberra,,seniors.csv
+20,Men,"ACT best",3000m,,"Cameron Myers",7:52.06,WC,2023-03-11,"11 Mar 23",Sydney,,seniors.csv
+20,Men,"ACT best","3000m Steeple",,"Scott McTaggart",9:09.18,NC,1997-01-11,"11 Jan 97",Canberra,,seniors.csv
+20,Men,"ACT best","3000m Walk",,"Kodi Clarkson",12:00.10,GIN,2023-12-09,"9 Dec 23",Perth,,seniors.csv
+20,Men,"ACT best","4 x 100m",,,42.38,ACT,2023-12-09,"9 Dec 23",Perth,,seniors.csv
+20,Men,"ACT best","4 x 1500m",,,17:44.80,WV,1981-01-25,"25 Jan 81",,,seniors.csv
+20,Men,"ACT best","4 x 200m",,,1:27.90,SCT,1995-03-19,"19 Mar 95",,,seniors.csv
+20,Men,"ACT best","4 x 400m",,,3:18.75,ACT,1985-03-17,"17 Mar 85",,,seniors.csv
+20,Men,"ACT best","4 x 800m",,,7:52.50,WV,1982-01-30,"30 Jan 82",,,seniors.csv
+20,Men,"ACT best",400m,,"Jonathon Bessell",47.57,WV,1986-03-09,"9 Mar 86",Hobart,,seniors.csv
+20,Men,"ACT best","400m Hurdles",,"Matt Beckenham",52.09,QBN,1993-12-11,"11 Dec 93",Canberra,,seniors.csv
+20,Men,"ACT best",5000m,,"Cameron Myers",13:49.66,WC,2025-04-03,"3 Apr 25",Perth,,seniors.csv
+20,Men,"ACT best","5000m Walk",,"Owen Toyne",20:39.06,GIN,2023-02-24,"24 Feb 23",Canberra,,seniors.csv
+20,Men,"ACT best",800m,,"Cameron Myers",1:47.11,WC,2024-01-28,"28 Jan 24",Canberra,,seniors.csv
+20,Men,"ACT best",Decathlon,,"Lachlan Calvert",7088,NCG,2014-10-25,"25 Oct 14",Canberra,,seniors.csv
+20,Men,"ACT best",Discus,1.75kg,"Ethan Ayodele",62.92,NCG,2024-04-11,"11 Apr 24",Adelaide,,seniors.csv
+20,Men,"ACT best",Discus,2kg,"Terry Martin",54.98,SCT,1996-12-07,"7 Dec 96",Perth,"Historical record",seniors.csv
+20,Men,"ACT best",Hammer,6kg,"Damian Wells",64.94,NCG,2022-09-04,"4 Sep 22",Canberra,,seniors.csv
+20,Men,"ACT best",Hammer,7.26kg,"Damian Wells",53.87,NCG,2022-04-19,"19 Apr 22","Gold Coast","Historical record",seniors.csv
+20,Men,"ACT best","High Jump",,"Joe Fishburn",2.15,WH,1995-03-05,"5 Mar 95",,,seniors.csv
+20,Men,"ACT best",Javelin,800g,"Kolya Cook",59.92,ACT,2016-03-13,"13 Mar 16",Perth,,seniors.csv
+20,Men,"ACT best","Long Jump",,"Angus Gould",7.71,NCG,2013-06-22,"22 Jun 13",Karlsruhe,,seniors.csv
+20,Men,"ACT best","Pole Vault",,"Misha van Scheppingen",4.90,COR,2024-03-17,"17 Mar 24",Sydney,,seniors.csv
+20,Men,"ACT best","Shot Put",6kg,"Elijah Wilson",18.00,GIN,2025-04-12,"12 Apr 25",Perth,,seniors.csv
+20,Men,"ACT best","Shot Put",7.26kg,"Elijah Wilson",15.83,GIN,2025-04-13,"13 Apr 25",Perth,"Historical record",seniors.csv
+20,Men,"ACT best","Triple Jump",,"John Howell",15.41,NC,1970-03-01,"1 Mar 70",,,seniors.csv
+20,Women,"ACT best","1 mile",,"Keely Small",4:33.57,WC,2020-12-19,"19 Dec 20",Sydney,,seniors.csv
+20,Women,"ACT best","10000m Walk",,"Zoe Hunt",48:20.73,NCG,2016-03-09,"9 Mar 16",Perth,,seniors.csv
+20,Women,"ACT best",1000m,,"Layla Rowntree",3:12.71,NCG,2020-10-24,"24 Oct 20",Canberra,"Event added Aug 2020",seniors.csv
+20,Women,"ACT best",100m,,"Melissa Breen",11.33,WH,2008-11-08,"8 Nov 08",,,seniors.csv
+20,Women,"ACT best","100m Hurdles",,"Aisha Shave",14.11,GIN,2025-04-12,"12 Apr 25",Perth,,seniors.csv
+20,Women,"ACT best",1500m,,"Keely Small",4:16.24,WC,2020-12-05,"5 Dec 20",Canberra,,seniors.csv
+20,Women,"ACT best","1500m Walk",,"Jillian Hosking",6:20.85,SCT,2004-12-04,"4 Dec 04",Canberra,,seniors.csv
+20,Women,"ACT best","2000m Steeple",,"Marnie Ponton",6:57.22,WB,2001-02-06,"6 Feb 01",Canberra,"Historical record",seniors.csv
+20,Women,"ACT best",200m,,"Melissa Breen",23.51,WH,2009-02-28,"28 Feb 09",,,seniors.csv
+20,Women,"ACT best",3000m,,"Emily Brichacek",9:06.41,SCT,2006-11-11,"11 Nov 06",Sydney,,seniors.csv
+20,Women,"ACT best","3000m Steeple",,"Hannah Cadden",11:33.55,NCG,2021-03-14,"14 Mar 21",Sydney,"Record added Jan 2021",seniors.csv
+20,Women,"ACT best","3000m Walk",,"Josephine Strangman",13.31.20,WH,1995-01-17,"17 Jan 95",Canberra,,seniors.csv
+20,Women,"ACT best","4 x 100m",,,47.10,ACT,1985-12-13,"13 Dec 85",,,seniors.csv
+20,Women,"ACT best","4 x 1500m",,,21:20.90,SCT,1980-01-26,"26 Jan 80",,,seniors.csv
+20,Women,"ACT best","4 x 200m",,,1:47.00,STW,1983-01-29,"29 Jan 83",,,seniors.csv
+20,Women,"ACT best","4 x 400m",,,3:48.46,ACT,2004-12-12,"12 Dec 04",Sydney,,seniors.csv
+20,Women,"ACT best","4 x 800m",,,9:35.90,WV,1984-01-28,"28 Jan 84",,,seniors.csv
+20,Women,"ACT best",400m,,"Angeline Blackburn",54.03,SCT,2006-08-16,"16 Aug 06",Beijing,,seniors.csv
+20,Women,"ACT best","400m Hurdles",,"Lauren Boden",57.45,NCG,2006-01-26,"26 Jan 06",Canberra,,seniors.csv
+20,Women,"ACT best",5000m,,"Keely Small",16.00.79,WC,2020-08-02,"2 Aug 20",Canberra,,seniors.csv
+20,Women,"ACT best","5000m Walk",,"Josephine Strangman",22:34.30,WH,1995-02-17,"17 Feb 95",Canberra,,seniors.csv
+20,Women,"ACT best",800m,,"Keely Small",2:00.81,WC,2018-04-12,"12 Apr 18","Gold Coast",,seniors.csv
+20,Women,"ACT best",Discus,1kg,"Lisa-Marie Vizaniari",60.44,NC,1990-08-12,"12 Aug 90",Plovdiv,,seniors.csv
+20,Women,"ACT best",Hammer,4kg,"Sally Chapman",51.51,QBN,2004-12-11,"11 Dec 04",Sydney,,seniors.csv
+20,Women,"ACT best",Heptathlon,,"Andrea Thompson",5366,QBN,2017-12-03,"3 Dec 17",Sydney,,seniors.csv
+20,Women,"ACT best","High Jump",,"Robyn Sluyters",1.78,SCT,1981-12-05,"5 Dec 81",,,seniors.csv
+20,Women,"ACT best",Javelin,600g,"Kiarna Woolley-Blain",52.96,BV,2021-04-17,"17 Apr 21",Sydney,,seniors.csv
+20,Women,"ACT best","Long Jump",,"Shermin Oksuz",6.41,CU,2003-04-12,"12 Apr 03","Runaway Bay",,seniors.csv
+20,Women,"ACT best","Pole Vault",,"Zyanya Holloway",3.41,WC,2024-02-18,"18 Feb 24",Canberra,,seniors.csv
+20,Women,"ACT best","Shot Put",4kg,"Lisa-Marie Vizaniari",16.14,NC,1988-10-29,"29 Oct 88",Canberra,,seniors.csv
+20,Women,"ACT best","Triple Jump",,"Tara Wyllie",12.59,WOD,2021-01-30,"30 Jan 21",Canberra,,seniors.csv
+Open,Men,"ACT best","1 hr track",,"Gary Lee",18.40,CCH,1983-11-02,"2 Nov 83",,,seniors.csv
+Open,Men,"ACT best","1 mile",,"Cameron Myers",3:55.44,WC,2023-02-23,"23 Feb 23",Melbourne,,seniors.csv
+Open,Men,"ACT best",10000m,,"Shaun Creighton",27:31.92,NC,1996-11-25,"25 Nov 96",Melbourne,,seniors.csv
+Open,Men,"ACT best","10000m Walk",,"Tim Fraser",39:16.75,SCT,2024-01-28,"28 Jan 24",Canberra,"Event added Jan 2021",seniors.csv
+Open,Men,"ACT best",1000m,,"Cameron Myers",2:17.25,WC,2025-06-07,"7 Jun 25",Zofingen,"Event added Aug 2020",seniors.csv
+Open,Men,"ACT best",100m,,"Patrick Johnson",9.93,CU,2003-05-05,"5 May 03","Mita, Japan",,seniors.csv
+Open,Men,"ACT best","110m Hurdles",,"Colby Eddowes",13.45,SCT,2025-05-09,"9 May 25",Virginia,,seniors.csv
+Open,Men,"ACT best",1500m,,"Cameron Myers",3:29.80,WC,2025-06-24,"24 Jun 25",Ostrava-Vítkovice,,seniors.csv
+Open,Men,"ACT best","1500m Walk",,"Garry Vogler",5:45.30,NC,1992-01-22,"22 Jan 92",,,seniors.csv
+Open,Men,"ACT best",200m,,"Patrick Johnson",20.35,QBN,2006-08-22,"22 Aug 06",Malmo,,seniors.csv
+Open,Men,"ACT best",3000m,,"Shaun Creighton",7:41.60,NC,1995-07-21,"21 Jul 95",Oslo,,seniors.csv
+Open,Men,"ACT best","3000m Steeple",,"Martin Dent",8:24.54,WC,2007-03-17,"17 Mar 07",Sydney,,seniors.csv
+Open,Men,"ACT best","3000m Walk",,"Andrew Jachno",11:09.10,WH,1991-01-02,"2 Jan 91",Canberra,,seniors.csv
+Open,Men,"ACT best","4 x 100m",,,40.88,ACT,2008-11-15,"15 Nov 08",Blacktown,,seniors.csv
+Open,Men,"ACT best","4 x 1500m",,,16:27.00,CCH,1978-02-04,"4 Feb 78",,,seniors.csv
+Open,Men,"ACT best","4 x 200m",,,1:27.60,WC,1986-12-06,"6 Dec 86",,,seniors.csv
+Open,Men,"ACT best","4 x 400m",,,3:15.78,ACT,2008-11-15,"15 Nov 08",Blacktown,,seniors.csv
+Open,Men,"ACT best","4 x 800m",,,7:48.90,WV,1985-11-23,"23 Nov 85",,,seniors.csv
+Open,Men,"ACT best",400m,,"Nicholas Donaldson",45.70,WOD,2023-10-28,"28 Oct 23",Canberra,,seniors.csv
+Open,Men,"ACT best","400m Hurdles",,"Brendan Cole",49.24,QBN,2012-08-03,"3 Aug 12",London,,seniors.csv
+Open,Men,"ACT best",5000m,,"Shaun Creighton",13:17.76,NC,1995-07-05,"5 Jul 95",Lausanne,,seniors.csv
+Open,Men,"ACT best","5000m Walk",,"Brendon Reading",20:19.70,NCG,2011-03-19,"19 Mar 11",Sydney,,seniors.csv
+Open,Men,"ACT best",800m,,"Riley McGown",1:46.08,NCG,2023-03-11,"11 Mar 23",Sydney,,seniors.csv
+Open,Men,"ACT best",Decathlon,,"Jon Morrison",7234,QBN,1992-02-01,"1 Feb 92",Canberra,,seniors.csv
+Open,Men,"ACT best",Discus,2kg,"Paul Nandapi",62.48,BS,1989-03-03,"3 Mar 89",Canberra,,seniors.csv
+Open,Men,"ACT best",Hammer,7.26kg,"Stuart Rendell",78.93,CU,2001-07-15,"15 Jul 01",Szombathely,,seniors.csv
+Open,Men,"ACT best","High Jump",,"Joe Fishburn",2.15,WH,1995-03-05,"5 Mar 95",,,seniors.csv
+Open,Men,"ACT best",Javelin,800g,"Nick Batty",71.76,CU,1991-01-30,"30 Jan 91",Canberra,"New Javelin Apr 1986",seniors.csv
+Open,Men,"ACT best","Long Jump",,"Scott Crowe",7.96,NCG,2008-12-01,"1 Dec 08",Canberra,,seniors.csv
+Open,Men,"ACT best","Pole Vault",,"Misha van Scheppingen",5.00,COR,2025-03-14,"14 Mar 25",Canberra,,seniors.csv
+Open,Men,"ACT best","Shot Put",7.26kg,"Rhys Jones",18.42,CU,2003-04-12,"12 Apr 03","Runaway Bay",,seniors.csv
+Open,Men,"ACT best","Triple Jump",,"Ken Lorraway",17.46,STW,1982-08-07,"7 Aug 82",London,,seniors.csv
+Open,Women,"ACT best","1 mile",,"Lisa Corrigan",4:22.66,WC,2007-03-02,"2 Mar 07",Melbourne,,seniors.csv
+Open,Women,"ACT best",10000m,,"Susan Hobson",31:54.57,NC,1996-05-06,"6 May 96",Mito,,seniors.csv
+Open,Women,"ACT best","10000m Walk",,"Zoe Hunt",46:29.00,NCG,2016-02-21,"21 Feb 16",Adelaide,,seniors.csv
+Open,Women,"ACT best",1000m,,"Keely Small",2:38.46,WC,2021-03-02,"2 Mar 21",Melbourne,,seniors.csv
+Open,Women,"ACT best",100m,,"Melissa Breen",11.11,WH,2014-02-09,"9 Feb 14",Canberra,,seniors.csv
+Open,Women,"ACT best","100m Hurdles",,"Aisha Shave",14.11,GIN,2025-04-12,"12 Apr 25",Perth,,seniors.csv
+Open,Women,"ACT best",1500m,,"Lisa Corrigan",4:05.25,WC,2007-02-17,"17 Feb 07",Sydney,,seniors.csv
+Open,Women,"ACT best","1500m Walk",,"Sue Cook",6:10.80,ACT,1984-01-21,"21 Jan 84",,,seniors.csv
+Open,Women,"ACT best",200m,,"Melissa Breen",23.12,WH,2013-03-09,"9 Mar 13",Sydney,,seniors.csv
+Open,Women,"ACT best","200m Hurdles",,"Lauren Boden",25.79,NCG,2017-01-21,"21 Jan 17",Canberra,,seniors.csv
+Open,Women,"ACT best",3000m,,"Benita Johnson",8:48.57,CU,2003-02-22,"22 Feb 03",Canberra,,seniors.csv
+Open,Women,"ACT best","3000m Steeple",,"Marnie Ponton",10:03.66,WH,2006-12-02,"2 Dec 06",Canberra,,seniors.csv
+Open,Women,"ACT best","3000m Walk",,"Sue Cook",12:42.10,ACT,1984-03-10,"10 Mar 84",Canberra,,seniors.csv
+Open,Women,"ACT best","4 x 100m",,,46.74,ACT,2008-11-16,"16 Nov 08",,,seniors.csv
+Open,Women,"ACT best","4 x 1500m",,,20:02.40,SCT,1980-01-26,"26 Jan 80",,,seniors.csv
+Open,Women,"ACT best","4 x 200m",,,1:38.04,ACT,2008-11-15,"15 Nov 08",Blacktown,,seniors.csv
+Open,Women,"ACT best","4 x 400m",,,3:50.55,ACT,2003-12-14,"14 Dec 03",Brisbane,,seniors.csv
+Open,Women,"ACT best","4 x 800m",,,9:35.00,WV,1980-01-27,"27 Jan 80",,,seniors.csv
+Open,Women,"ACT best",400m,,"Lauren Boden",52.56,NCG,2019-03-09,"9 Mar 19",Canberra,,seniors.csv
+Open,Women,"ACT best","400m Hurdles",,"Lauren Boden",54.87,NCG,2019-04-07,"7 Apr 19",Sydney,,seniors.csv
+Open,Women,"ACT best",5000m,,"Benita Johnson",15:21.55,CU,2003-03-01,"1 Mar 03",Melbourne,,seniors.csv
+Open,Women,"ACT best","5000m Walk",,"Sue Cook",22:04.42,ACT,1984-04-01,"1 Apr 84",Melbourne,,seniors.csv
+Open,Women,"ACT best",800m,,"Keely Small",2:00.81,WC,2018-04-12,"12 Apr 18","Gold Coast",,seniors.csv
+Open,Women,"ACT best",Discus,1kg,"Gael Martin",62.44,SCT,1986-02-23,"23 Feb 86",,,seniors.csv
+Open,Women,"ACT best",Hammer,4kg,"Kara Baker",53.18,WC,2024-04-12,"12 Apr 24",Adelaide,,seniors.csv
+Open,Women,"ACT best",Heptathlon,,"Clare Thompson",5766,QBN,1999-07-09,"9 Jul 99","Palma de Majorca",,seniors.csv
+Open,Women,"ACT best","High Jump",,"Robyn Sluyters",1.78,SCT,1981-12-05,"5 Dec 81",,,seniors.csv
+Open,Women,"ACT best",Javelin,600g,"Sue Howland",64.58,BS,1986-03-01,"1 Mar 86",,"Historical record",seniors.csv
+Open,Women,"ACT best","Long Jump",,"Robyn Lorraway",6.86,BS,1986-02-23,"23 Feb 86",Canberra,,seniors.csv
+Open,Women,"ACT best","Pole Vault",,"Dash Newington",3.64,WOD,2025-01-27,"27 Jan 25",Canberra,,seniors.csv
+Open,Women,"ACT best","Shot Put",4kg,"Gael Martin",18.69,SCT,1986-03-15,"15 Mar 86",,,seniors.csv
+Open,Women,"ACT best","Triple Jump",,"Tara Wyllie",12.59,WOD,2021-01-30,"30 Jan 21",Canberra,,seniors.csv

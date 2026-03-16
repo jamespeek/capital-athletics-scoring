@@ -18,13 +18,13 @@ Create `.env` file with following data:
 
 Note, data isn't included in the repository due to it including names and dates of birth, and also being time dependent.
 
-CSV data from meet manager goes into `./data/{comp name}` e.g. `/data/hn`.
+CSV data from meet manager goes into `./data/{comp name}` e.g. `/data/ss`.
 
 Number the CSV files sequentially (`1.csv`, `2.csv`, ...).
 
 ## Optional URL parameters
 
-* `comp` Defaults to `hn`. Needs to match the data directory name above.
+* `comp` Defaults to `ss`. Needs to match the data directory name above.
 * `verbose` Defaults to `true`. Use to show all working.
 * `club` Defaults to `none`. Use to filter data down to a club rather than all CA clubs, e.g. 'Woden Athletics'.
  
