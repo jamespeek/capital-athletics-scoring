@@ -1,27 +1,13 @@
 <?php
 
-function formatTooltipResult($event, $result) {
-    $event = (string)$event;
-    $result = trim((string)$result);
+function renderScoreStatusLabel($status) {
+    $labels = [
+        'unavailable' => 'Score unavailable',
+        'no_record' => 'No matching ACT record found',
+        'invalid_record' => 'Matched record was invalid',
+    ];
 
-    if ($result === '') {
-        return '';
-    }
-
-    if (!actScoreIsTimeEvent(actScoreNormalizeEvent($event))) {
-        return $result;
-    }
-
-    $rawValue = actScoreParseResult($result);
-
-    if ($rawValue === null || $rawValue < 60) {
-        return $result;
-    }
-
-    $minutes = floor($rawValue / 60);
-    $seconds = $rawValue - ($minutes * 60);
-
-    return sprintf('%d:%05.2f', $minutes, $seconds);
+    return $labels[$status] ?? $status;
 }
 
 function buildScoreTooltipLines($scoreData) {
@@ -30,20 +16,21 @@ function buildScoreTooltipLines($scoreData) {
     $adjustment = $meta['adjustment'] ?? [];
     $lookup = $meta['lookup'] ?? [];
     $record = $meta['record'] ?? [];
+    $display = $meta['display'] ?? [];
     $lines = [];
     $lines[] = 'Input age: ' . ($input['age'] ?? '');
     $lines[] = 'Input gender: ' . ($input['gender'] ?? '');
     $lines[] = 'Input event: ' . ($input['event'] ?? '');
-    $lines[] = 'Raw result: ' . formatTooltipResult($input['event'] ?? '', $input['result'] ?? '');
+    $lines[] = 'Raw result: ' . ($display['raw_result'] ?? $input['result'] ?? '');
 
     if (($adjustment['wma_factor'] ?? null) !== null) {
-        $lines[] = 'WMA factor: ' . actScoreFormatNumber($adjustment['wma_factor'], 5);
-        $lines[] = 'Adjusted result: ' . actScoreFormatNumber((float)$adjustment['adjusted_result'], 2);
-        $lines[] = 'Lookup age: ' . ((int)$lookup['age'] === 999 ? 'Open' : actScoreAgeLabel((string)$lookup['age']));
+        $lines[] = 'WMA factor: ' . ($display['wma_factor'] ?? '');
+        $lines[] = 'Adjusted result: ' . ($display['adjusted_result'] ?? '');
+        $lines[] = 'Lookup age: ' . ($display['lookup_age'] ?? '');
     }
 
     if (!empty($lookup['matched_age'])) {
-        $lines[] = 'Matched age: ' . actScoreAgeLabel($lookup['matched_age']);
+        $lines[] = 'Matched age: ' . ($display['matched_age'] ?? '');
     }
 
     if (!empty($record['result'])) {
@@ -70,8 +57,8 @@ function buildScoreTooltipLines($scoreData) {
         $lines[] = 'Score: ' . $scoreData['score'];
     }
 
-    if (!empty($scoreData['status']) && $scoreData['status'] !== 'OK') {
-        $lines[] = 'Status: ' . $scoreData['status'];
+    if (!empty($scoreData['status']) && $scoreData['status'] !== 'ok') {
+        $lines[] = 'Status: ' . renderScoreStatusLabel($scoreData['status']);
     }
 
     return $lines;
@@ -125,13 +112,29 @@ function renderAthleteEventSummary($eventSummary) {
     }
 
     if ($eventSummary['best_score']) {
-        echo '<div style="margin-top:5px"><strong>Best:</strong> ';
+        echo '<div class="event-best-score"><strong>Best:</strong> ';
         echo $eventSummary['best_score'] . ' &times; ' . number_format($eventSummary['participation_score'], 2);
         echo ' = ' . $eventSummary['final_score'] . '</div>';
     }
 
     echo '</ul>';
     echo '</li>';
+    return ob_get_clean();
+}
+
+function renderAthleteSummaries($athleteSummaries) {
+    ob_start();
+
+    foreach ($athleteSummaries as $athleteSummary) {
+        echo renderAthleteSummary(
+            $athleteSummary['name'],
+            $athleteSummary['athlete'],
+            $athleteSummary['event_summaries'],
+            $athleteSummary['totals'],
+            $athleteSummary['total']
+        );
+    }
+
     return ob_get_clean();
 }
 
@@ -167,7 +170,7 @@ function renderAthleteScoresTable($athletes, $clubFilter) {
     echo '</tr>';
 
     foreach ($athletes as $athleteName => $athlete) {
-        if ($athlete['score'] == 0) continue;
+        if ((float)$athlete['score'] === 0.0) continue;
 
         echo '<tr>';
         echo '<td>' . htmlspecialchars($athleteName) . '</td>';
@@ -196,7 +199,7 @@ function renderClubScoresTable($clubs) {
     echo '</tr>';
 
     foreach ($clubs as $club => $clubObj) {
-        if ($clubObj['score'] == 0) continue;
+        if ((float)$clubObj['score'] === 0.0) continue;
 
         echo '<tr>';
         echo '<td>' . htmlspecialchars($club) . '</td>';

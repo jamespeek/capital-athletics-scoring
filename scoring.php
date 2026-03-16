@@ -1,35 +1,18 @@
 <?php
 
-/**
- * ACT Record Scoring Utility
- *
- * Usage:
- *   require_once __DIR__ . '/act_score.php';
- *   $scoreData = calcScore(17, 'Men', 'Pole Vault', 3.50);
- *   echo $scoreData['score'];
- *
- * Behaviour:
- *   - Returns score data including the numeric score and supporting meta data
- *   - If no suitable record is found the score is null
- *   - CSV parsed once per request and cached for speed
- *
- * CSV expected at:
- *   data/reference/combined-act.csv
- */
-
-function calcScore($age, $gender, $event, $result) {
-    $records = actScoreLoadRecords();
-    $wmaData = actScoreLoadWmaData();
+function calcScore($age, $gender, $eventName, $rawResult) {
+    $records = scoreLoadRecords();
+    $wmaData = scoreLoadWmaData();
 
     $ageRaw = trim((string)$age);
     $genderRaw = trim((string)$gender);
-    $eventRaw = trim((string)$event);
-    $resultRaw = trim((string)$result);
+    $eventRaw = trim((string)$eventName);
+    $resultRaw = trim((string)$rawResult);
 
-    $actualAge = actScoreNormalizeAge($ageRaw);
-    $gender = actScoreNormalizeGender($genderRaw);
-    $event = actScoreNormalizeEvent($eventRaw);
-    $rawValue = is_numeric($result) ? (float)$result : actScoreParseResult($resultRaw);
+    $actualAge = scoreNormaliseAge($ageRaw);
+    $gender = scoreNormaliseGender($genderRaw);
+    $event = scoreNormaliseEvent($eventRaw);
+    $rawValue = is_numeric($rawResult) ? (float)$rawResult : scoreParseResult($resultRaw);
     $scoreData = [
         'score' => null,
         'status' => null,
@@ -55,11 +38,18 @@ function calcScore($age, $gender, $event, $result) {
                 'name' => null,
                 'source' => null,
             ],
+            'display' => [
+                'raw_result' => scoreFormatDisplayResult($eventRaw, $resultRaw, $rawValue),
+                'wma_factor' => null,
+                'adjusted_result' => null,
+                'lookup_age' => null,
+                'matched_age' => null,
+            ],
         ],
     ];
 
     if (!$records || $actualAge === null || $gender === '' || $event === '' || $rawValue === null || $rawValue <= 0) {
-        $scoreData['status'] = 'Score unavailable';
+        $scoreData['status'] = 'unavailable';
         return $scoreData;
     }
 
@@ -80,11 +70,14 @@ function calcScore($age, $gender, $event, $result) {
     $scoreData['meta']['adjustment']['wma_factor'] = $actualAge >= 35 && $actualAge !== 999 ? $factor : null;
     $scoreData['meta']['adjustment']['adjusted_result'] = $adjustedValue;
     $scoreData['meta']['lookup']['age'] = $lookupAge;
+    $scoreData['meta']['display']['wma_factor'] = $actualAge >= 35 && $actualAge !== 999 ? scoreFormatNumber($factor, 5) : null;
+    $scoreData['meta']['display']['adjusted_result'] = scoreFormatNumber((float)$adjustedValue, 2);
+    $scoreData['meta']['display']['lookup_age'] = scoreAgeLabel((string)$lookupAge);
 
-    $record = actScoreFindRecord($records, $lookupAge, $gender, $event);
+    $record = scoreFindRecord($records, $lookupAge, $gender, $event);
 
     if (!$record) {
-        $scoreData['status'] = 'No matching ACT record found';
+        $scoreData['status'] = 'no_record';
         return $scoreData;
     }
 
@@ -94,13 +87,14 @@ function calcScore($age, $gender, $event, $result) {
     $scoreData['meta']['record']['weight'] = $record['Weight'] ?? null;
     $scoreData['meta']['record']['name'] = $record['Name'] ?? null;
     $scoreData['meta']['record']['source'] = $record['Source'] ?? null;
+    $scoreData['meta']['display']['matched_age'] = scoreAgeLabel((string)($record['Age'] ?? ''));
 
     if (!$recordValue || $recordValue <= 0) {
-        $scoreData['status'] = 'Matched record was invalid';
+        $scoreData['status'] = 'invalid_record';
         return $scoreData;
     }
 
-    $timeEvent = actScoreIsTimeEvent($event);
+    $timeEvent = scoreIsTimeEvent($event);
 
     if ($timeEvent) {
         $percentage = $recordValue / $adjustedValue;
@@ -110,21 +104,21 @@ function calcScore($age, $gender, $event, $result) {
 
     $score = round($percentage * appConfig()['score_base'], 0);
     $scoreData['score'] = (float)$score;
-    $scoreData['status'] = 'OK';
+    $scoreData['status'] = 'ok';
     $scoreData['meta']['adjustment']['percentage'] = $percentage;
 
     return $scoreData;
 }
 
-function buildAthleteEventSummary($athlete, $event, $results, $meetEventArray) {
+function buildAthleteEventSummary($athlete, $eventName, $eventResults, $meetEvents) {
     $specialMeetNames = appConfig()['special_meet_names'];
     $meetSummaries = [];
     $bestScore = 0;
     $offered = 0;
     $entered = 0;
 
-    foreach ($meetEventArray as $meet) {
-        if (!in_array($event, $meet['events'])) {
+    foreach ($meetEvents as $meet) {
+        if (!in_array($eventName, $meet['events'])) {
             continue;
         }
 
@@ -148,14 +142,14 @@ function buildAthleteEventSummary($athlete, $event, $results, $meetEventArray) {
             'has_missing_record' => false,
         ];
 
-        foreach ($results as $result) {
-            if (!$result['result_raw'] || $result['meet'] != $meetName) {
+        foreach ($eventResults as $eventResult) {
+            if (!$eventResult['result_raw'] || $eventResult['meet'] !== $meetName) {
                 continue;
             }
 
-            $meetSummary['result_str'] = $result['result_str'];
-            $meetSummary['score_data'] = calcScore($result['age'], $result['gender'], $result['event'], $result['result_raw']);
-            $meetSummary['has_missing_record'] = $meetSummary['score_data']['score'] === null;
+            $meetSummary['result_str'] = $eventResult['result_str'];
+            $meetSummary['score_data'] = calcScore($eventResult['age'], $eventResult['gender'], $eventResult['event'], $eventResult['result_raw']);
+            $meetSummary['has_missing_record'] = $meetSummary['score_data']['status'] === 'no_record';
 
             if ($meetSummary['score_data']['score'] !== null && $meetSummary['score_data']['score'] > $bestScore) {
                 $bestScore = $meetSummary['score_data']['score'];
@@ -173,7 +167,7 @@ function buildAthleteEventSummary($athlete, $event, $results, $meetEventArray) {
     $finalScore = round($bestScore * $participationScore);
 
     return [
-        'event' => $event,
+        'event' => $eventName,
         'meets' => $meetSummaries,
         'best_score' => $bestScore,
         'participation_score' => $participationScore,
@@ -181,7 +175,7 @@ function buildAthleteEventSummary($athlete, $event, $results, $meetEventArray) {
     ];
 }
 
-function actScoreLoadRecords() {
+function scoreLoadRecords() {
     static $cache = null;
 
     if ($cache !== null) {
@@ -201,7 +195,7 @@ function actScoreLoadRecords() {
         return null;
     }
 
-    $headers = array_map('actScoreCleanHeader', $headers);
+    $headers = array_map('scoreCleanHeader', $headers);
 
     $index = [];
     $ages = [];
@@ -216,10 +210,10 @@ function actScoreLoadRecords() {
             continue;
         }
 
-        $gender = actScoreNormalizeGender($r['Gender'] ?? '');
-        $event = actScoreNormalizeEvent($r['Event'] ?? '');
-        $age = actScoreNormalizeAge($r['Age'] ?? '');
-        $value = actScoreParseResult($r['Result'] ?? '');
+        $gender = scoreNormaliseGender($r['Gender'] ?? '');
+        $event = scoreNormaliseEvent($r['Event'] ?? '');
+        $age = scoreNormaliseAge($r['Age'] ?? '');
+        $value = scoreParseResult($r['Result'] ?? '');
 
         if (!$gender || !$event || $age === null || !$value) {
             continue;
@@ -241,7 +235,7 @@ function actScoreLoadRecords() {
 
     foreach ($index as $g => $events) {
         foreach ($events as $event => $ageRows) {
-            $timeEvent = actScoreIsTimeEvent($event);
+            $timeEvent = scoreIsTimeEvent($event);
 
             foreach ($ageRows as $age => $rows) {
                 $best = null;
@@ -272,7 +266,7 @@ function actScoreLoadRecords() {
     return $cache;
 }
 
-function actScoreLoadWmaData() {
+function scoreLoadWmaData() {
     static $cache = null;
 
     if ($cache !== null) {
@@ -295,7 +289,7 @@ function actScoreLoadWmaData() {
     return $cache;
 }
 
-function actScoreFindRecord($records, $age, $gender, $event) {
+function scoreFindRecord($records, $age, $gender, $event) {
     if (!isset($records['index'][$gender][$event])) {
         return null;
     }
@@ -315,7 +309,7 @@ function actScoreFindRecord($records, $age, $gender, $event) {
     return null;
 }
 
-function actScoreNormalizeAge($age) {
+function scoreNormaliseAge($age) {
     $age = trim((string)$age);
 
     if ($age === '') {
@@ -333,7 +327,7 @@ function actScoreNormalizeAge($age) {
     return null;
 }
 
-function actScoreAgeLabel($age) {
+function scoreAgeLabel($age) {
     $age = (string)$age;
 
     if (strcasecmp($age, 'Open') === 0 || (int)$age === 999) {
@@ -343,7 +337,7 @@ function actScoreAgeLabel($age) {
     return 'U' . $age;
 }
 
-function actScoreNormalizeGender($g) {
+function scoreNormaliseGender($g) {
     $g = strtolower(trim((string)$g));
 
     if (in_array($g, ['m', 'male', 'men', 'boy', 'boys'], true)) {
@@ -357,7 +351,7 @@ function actScoreNormalizeGender($g) {
     return ucfirst($g);
 }
 
-function actScoreNormalizeEvent($event) {
+function scoreNormaliseEvent($event) {
     $event = trim((string)$event);
     $event = preg_replace('/\s+/', ' ', $event);
     $event = preg_replace('/\s+\d+(?:\.\d+)?\s*(g|kg)$/i', '', $event);
@@ -366,7 +360,7 @@ function actScoreNormalizeEvent($event) {
     return $event;
 }
 
-function actScoreParseResult($r) {
+function scoreParseResult($r) {
     $r = trim((string)$r);
 
     if ($r === '') {
@@ -376,11 +370,11 @@ function actScoreParseResult($r) {
     if (strpos($r, ':') !== false) {
         $parts = explode(':', $r);
 
-        if (count($parts) == 2) {
+        if (count($parts) === 2) {
             return ($parts[0] * 60) + $parts[1];
         }
 
-        if (count($parts) == 3) {
+        if (count($parts) === 3) {
             return ($parts[0] * 3600) + ($parts[1] * 60) + $parts[2];
         }
     }
@@ -390,7 +384,7 @@ function actScoreParseResult($r) {
     return (float)$r;
 }
 
-function actScoreIsTimeEvent($event) {
+function scoreIsTimeEvent($event) {
     $event = strtolower(trim((string)$event));
 
     if ($event === '') {
@@ -428,13 +422,36 @@ function actScoreIsTimeEvent($event) {
     return false;
 }
 
-function actScoreCleanHeader($h) {
+function scoreCleanHeader($h) {
     $h = trim((string)$h);
     $h = preg_replace('/^\xEF\xBB\xBF/', '', $h);
     return $h;
 }
 
-function actScoreFormatNumber($value, $decimals = 5) {
+function scoreFormatNumber($value, $decimals = 5) {
     $formatted = number_format((float)$value, $decimals, '.', '');
     return rtrim(rtrim($formatted, '0'), '.');
+}
+
+function scoreFormatDisplayResult($eventName, $resultText, $rawValue = null) {
+    $resultText = trim((string)$resultText);
+
+    if ($resultText === '') {
+        return '';
+    }
+
+    if (!scoreIsTimeEvent(scoreNormaliseEvent($eventName))) {
+        return $resultText;
+    }
+
+    $rawValue = $rawValue ?? scoreParseResult($resultText);
+
+    if ($rawValue === null || $rawValue < 60) {
+        return $resultText;
+    }
+
+    $minutes = floor($rawValue / 60);
+    $seconds = $rawValue - ($minutes * 60);
+
+    return sprintf('%d:%05.2f', $minutes, $seconds);
 }

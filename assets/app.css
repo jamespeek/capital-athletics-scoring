@@ -42,6 +42,10 @@ li li:not(:has(button)) {
     padding: 1px 3px;
 }
 
+.event-best-score {
+    margin-top: 5px;
+}
+
 .athlete:not(:has(button)) {
     display: none;
 }

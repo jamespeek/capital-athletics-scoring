@@ -65,9 +65,9 @@ function getData($filename, $comp) {
 
     $data = [];
     while (($row = fgetcsv($handle, null, ';')) !== false) {
-        if (empty(array_filter($row)) || $row[0] != 'E') continue; // skip empty lines or lines that don't start with E (event?)
+        if (empty(array_filter($row)) || $row[0] !== 'E') continue; // skip empty lines or lines that don't start with E (event?)
 
-        [$resultRaw, $resultUnits] = parseResult($row[10]);
+        [$resultRaw, $resultUnits] = parseMeetResultData($row[10]);
 
         $result = [
             'meet' => $meet,
@@ -161,7 +161,7 @@ function filterResultsByClub($resultData, $clubFilter) {
     }
 
     return array_filter($resultData, function ($row) use ($clubFilter) {
-        return isset($row['club']) && $row['club'] == $clubFilter;
+        return isset($row['club']) && $row['club'] === $clubFilter;
     });
 }
 
@@ -199,11 +199,63 @@ function buildClubSummaries($clubs, $clubsData, $meetEventArray) {
             $clubs[$clubName]['officials'] += $officialCount * $officialPoints;
         }
 
-        $clubs[$clubName]['cpf'] = calcClubParticipationaFactor(count($clubObj['athletes']), $clubs[$clubName]['size']);
+        $clubs[$clubName]['cpf'] = calcClubParticipationFactor(count($clubObj['athletes']), $clubs[$clubName]['size']);
         $clubs[$clubName]['adj'] = calcClubAdjustedTotal($clubObj['score'], $clubs[$clubName]['cpf'], $clubs[$clubName]['officials']);
     }
 
     return sortClubsByAdjustedScore($clubs);
+}
+
+function buildAthleteSummaries($athletes, $clubsData, $meetEventArray, $clubFilter) {
+    $athleteSummaries = [];
+    $clubs = [];
+
+    foreach ($athletes as $athleteName => $athlete) {
+        $eventSummaries = [];
+        $athleteTotals = [];
+
+        foreach ($athlete['events'] as $eventName => $eventResults) {
+            $eventSummary = buildAthleteEventSummary($athlete, $eventName, $eventResults, $meetEventArray);
+            $eventSummaries[] = $eventSummary;
+            $athleteTotals[] = $eventSummary['final_score'];
+        }
+
+        if (!$clubFilter) {
+            rsort($athleteTotals);
+            $athleteTotals = array_slice($athleteTotals, 0, 4);
+        }
+
+        $athleteTotal = array_sum($athleteTotals);
+
+        $athletes[$athleteName]['score'] = $athleteTotal;
+        $athleteSummaries[] = [
+            'name' => $athleteName,
+            'athlete' => $athlete,
+            'event_summaries' => $eventSummaries,
+            'totals' => $athleteTotals,
+            'total' => $athleteTotal,
+        ];
+
+        if (!isset($clubsData[$athletes[$athleteName]['club']])) {
+            continue;
+        }
+
+        if (!isset($clubs[$athletes[$athleteName]['club']])) {
+            $clubs[$athletes[$athleteName]['club']] = [
+                'score' => 0,
+                'athletes' => [],
+            ];
+        }
+
+        $clubs[$athletes[$athleteName]['club']]['score'] += $athleteTotal;
+        $clubs[$athletes[$athleteName]['club']]['athletes'][] = $athleteName;
+    }
+
+    return [
+        'athletes' => $athletes,
+        'athlete_summaries' => $athleteSummaries,
+        'clubs' => $clubs,
+    ];
 }
 
 function sortClubsByAdjustedScore($clubs) {
@@ -288,7 +340,7 @@ function normaliseEventName($eventName) {
     return $eventName;
 }
 
-function parseResult($result_str) {
+function parseMeetResultData($result_str) {
     if (strstr($result_str, 'm')) {
         // distance in metres
         return [(float)$result_str, 'm'];
@@ -304,7 +356,7 @@ function parseResult($result_str) {
     return [null, null];
 }
 
-function calcClubParticipationaFactor($athletes, $size) {
+function calcClubParticipationFactor($athletes, $size) {
     if ($size <= 0) {
         return number_format(0, 3);
     }

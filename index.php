@@ -37,49 +37,10 @@ usort($resultData, function($a, $b) {
 // Bundle each person's results together so we can score them event by event.
 $athletes = groupResultsByAthlete($resultData);
 
-// start writing to the buffer so we can conditionally show the output
-ob_start();
-
-$clubs = [];
-
-// loop through the athletes
-foreach ($athletes as $athlete_name => $athlete) {
-    $eventSummaries = [];
-    $athlete_totals = [];
-
-    // loop through the athletes events
-    foreach ($athlete['events'] as $event => $results) {
-        $eventSummary = buildAthleteEventSummary($athlete, $event, $results, $meetEventArray);
-        $eventSummaries[] = $eventSummary;
-        $athlete_totals[] = $eventSummary['final_score'];
-    }
-
-    if (!$clubFilter) {
-        // for CA we only want the top 4 events
-        rsort($athlete_totals);
-        $athlete_totals = array_slice($athlete_totals, 0, 4);
-    }
-
-    // sum the athletes highest scores
-    $athlete_total = array_sum($athlete_totals);
-
-    echo renderAthleteSummary($athlete_name, $athlete, $eventSummaries, $athlete_totals, $athlete_total);
-
-    // push into a table of athletes
-    $athletes[$athlete_name]['score'] = $athlete_total;
-
-    if (isset($clubsData[$athletes[$athlete_name]['club']])) {
-        if (!isset($clubs[$athletes[$athlete_name]['club']])) {
-            $clubs[$athletes[$athlete_name]['club']] = ['score' => 0, 'athletes' => []];
-        }
-
-        // push into a table of clubs (only ones we are interested in)
-        $clubs[$athletes[$athlete_name]['club']]['score'] += $athlete_total;
-        $clubs[$athletes[$athlete_name]['club']]['athletes'][] = $athlete_name;
-    }
-}
-
-$output = ob_get_clean();
+$summaryData = buildAthleteSummaries($athletes, $clubsData, $meetEventArray, $clubFilter);
+$athletes = $summaryData['athletes'];
+$clubs = $summaryData['clubs'];
+$output = renderAthleteSummaries($summaryData['athlete_summaries']);
 
 // Put the highest-scoring athletes at the top of the summary table.
 $athletes = sortAthletesByScore($athletes);
