@@ -59,17 +59,7 @@ The points score for each result is based on ACT record data in `data/reference/
 * Under-35 athletes are scored against the next age group up.
 * Athletes aged 35 and over are adjusted using WMA factors and then compared against Open records.
 * Time events and field events are compared differently so that a stronger performance always produces a higher score.
-* The score scale is based on the app config in `utils.php`.
-
-## Scoring exceptions
-
-The scoring code also includes a few explicit business-rule overrides that sit on top of the general rules:
-
-* For `U9-U18 Champs`, athletes aged `12` and under are scored against their own age records instead of the usual "one age up" junior lookup.
-* For masters hurdles, `80/100/110m Hurdles` are mapped through WMA as `Short Hurdles` and compared against Open `110m Hurdles` for men or Open `100m Hurdles` for women.
-* For masters hurdles, `200/300/400m Hurdles` are mapped through WMA as `Long Hurdles` and compared against Open `400m Hurdles`.
-* For masters steeple, `2000m/3000m Steeple` is mapped through WMA as `Steeple Chase` and compared against Open `3000m Steeple`.
-* For male masters aged `35-59`, a `2000m Steeple` performance is projected to a `3000m` comparison time using `time * 1.5 + 15 seconds` before scoring.
+* The final points value is calculated by multiplying the performance ratio by the base score from `appConfig()` in `utils.php` (currently `800`) and rounding to a whole number.
 
 Athlete totals are then calculated:
 
@@ -84,3 +74,13 @@ Club totals are built from the summed athlete totals and then adjusted using:
 The final club adjusted score is:
 
 `club athlete total * participation factor + officials bonus`
+
+## Scoring exceptions
+
+The scoring code also includes a few explicit business-rule overrides that sit on top of the general rules:
+
+* For `U9-U18 Champs`, athletes aged `12` and under are scored against their own age records instead of the usual "one age up" junior lookup.
+* For masters hurdles, `80/100/110m Hurdles` are mapped through WMA as `Short Hurdles` and compared against Open `110m Hurdles` for men or Open `100m Hurdles` for women.
+* For masters hurdles, `200/300/400m Hurdles` are mapped through WMA as `Long Hurdles` and compared against Open `400m Hurdles`.
+* For masters steeple, `2000m/3000m Steeple` is mapped through WMA as `Steeple Chase` and compared against Open `3000m Steeple`.
+* For male masters aged `35-59`, a `2000m Steeple` performance is projected to a `3000m` comparison time using `time * 1.5 + 15 seconds` before scoring.
