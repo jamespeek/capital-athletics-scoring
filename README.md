@@ -61,6 +61,16 @@ The points score for each result is based on ACT record data in `data/reference/
 * Time events and field events are compared differently so that a stronger performance always produces a higher score.
 * The score scale is based on the app config in `utils.php`.
 
+## Scoring exceptions
+
+The scoring code also includes a few explicit business-rule overrides that sit on top of the general rules:
+
+* For `U9-U18 Champs`, athletes aged `12` and under are scored against their own age records instead of the usual "one age up" junior lookup.
+* For masters hurdles, `80/100/110m Hurdles` are mapped through WMA as `Short Hurdles` and compared against Open `110m Hurdles` for men or Open `100m Hurdles` for women.
+* For masters hurdles, `200/300/400m Hurdles` are mapped through WMA as `Long Hurdles` and compared against Open `400m Hurdles`.
+* For masters steeple, `2000m/3000m Steeple` is mapped through WMA as `Steeple Chase` and compared against Open `3000m Steeple`.
+* For male masters aged `35-59`, a `2000m Steeple` performance is projected to a `3000m` comparison time using `time * 1.5 + 15 seconds` before scoring.
+
 Athlete totals are then calculated:
 
 * In the full competition view for CA, only the athlete's top 4 event scores count.
