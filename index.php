@@ -3,17 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Senior athletics scoring</title>
+    <title>CA: Senior athletics scoring</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <style>
-        /* .athlete:not(:has(button)), .athlete > ul > li:not(:has(li)) {
-            display: none;
-        } */
-
-        li li:not(:has(button)) {
-            opacity: .3;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
 
@@ -21,64 +13,32 @@
     
 <?php
 
+define('ACT_SCORE_BASE', 800);
+
 $verbose = $_GET['verbose'] ?? true;
 $clubFilter = $_GET['club'] ?? false;
 $comp = $_GET['comp'] ?? 'ss';
 
 include_once 'utils.php';
-include_once 'act_score.php';
+include_once 'scoring.php';
 
+// Pull in the club size and officials data we need for the final club scores.
 $clubsData = loadClubData();
 
-$files = glob(dirname(__FILE__) . '/data/' . $comp . '/*.csv');
+// Find the CSV result files for this competition and put them in the right order.
+$files = loadCompetitionFiles($comp, $clubFilter);
 
-if ($clubFilter) {
-    $files = array_filter($files, function ($file) {
-        return preg_match('/\/\d+\.csv$/', $file);
-    });
-}
+// Read every CSV file and turn it into one list of athlete results.
+$resultData = loadCompetitionResults($files, $comp);
 
-natsort($files);
+// Remove the events we do not want to include anywhere in the scoring.
+$resultData = filterExcludedEvents($resultData);
 
-// load the data
-$resultData = [];
-foreach ($files as $file) {
-    $resultData = array_merge($resultData, getData($file, $comp));
-}
+// Build a simple list of which events were offered at each meet.
+$meetEventArray = buildMeetEventArray($resultData);
 
-// create a lookup map of meets and the events offered
-$meetEventMap = [];
-
-foreach ($resultData as $entry) {
-    $meet = $entry['meet'];
-    $event = $entry['event'];
-    
-    // initialize array for meet if it doesn't exist
-    if (!isset($meetEventMap[$meet])) {
-        $meetEventMap[$meet] = [];
-    }
-    
-    // add event if not already in the list
-    if (!in_array($event, $meetEventMap[$meet])) {
-        $meetEventMap[$meet][] = $event;
-    }
-}
-
-$meetEventArray = [];
-foreach ($meetEventMap as $meet => $events) {
-    $meetEventArray[] = [
-        'name' => $meet,
-        'events' => $events
-    ];
-}
-
-// if this is just for Corroboree filter out the other results
-if ($clubFilter) {
-    $resultData = array_filter($resultData, function ($row) {
-        global $clubFilter;
-        return isset($row['club']) && $row['club'] == $clubFilter;
-    });
-}
+// Keep only one club's results when a club filter has been chosen.
+$resultData = filterResultsByClub($resultData, $clubFilter);
 
 // sort the data by name then meet
 usort($resultData, function($a, $b) {
@@ -86,16 +46,8 @@ usort($resultData, function($a, $b) {
     return strcasecmp($a['meet'], $b['meet']);
 });
 
-$athletes = [];
-
-// group the data by athlete
-foreach ($resultData as $row) {
-    $key = $row['firstname'] . ' ' . $row['lastname'];
-
-    $athletes[$key]['events'][$row['event']][] = $row;
-    $athletes[$key]['club'] = $row['club'];
-    $athletes[$key]['age'] = $row['age'];
-}
+// Bundle each person's results together so we can score them event by event.
+$athletes = groupResultsByAthlete($resultData);
 
 // start writing to the buffer so we can conditionally show the output
 ob_start();
@@ -128,14 +80,9 @@ foreach ($athletes as $athlete_name => $athlete) {
             if (!in_array($event, $meetEventArray[$idx]['events'])) continue;
 
             $name = $meetEventArray[$idx]['name'];
-            
-            if (strpos($name, 'a')) {
-                $name = 'U9-U18 Champs';
-                if ($clubFilter || $result['age'] > 17) continue;
-            } else if (strpos($name, 'b')) {
-                $name = 'U20 & Opens Champs';
-                if ($clubFilter || $result['age'] < 18) continue;
-            }
+
+            if ($name === 'U9-U18 Champs' && $athlete['age'] > 17) continue;
+            if ($name === 'U20 & Opens Champs' && $athlete['age'] < 18) continue;
 
             echo '<li>';
 
@@ -189,12 +136,12 @@ foreach ($athletes as $athlete_name => $athlete) {
     echo '</ul>';
 
     if (!$clubFilter) {
-        // for ca we only want the top 4 events
+        // for CA we only want the top 4 events
         rsort($athlete_totals);
         $athlete_totals = array_slice($athlete_totals, 0, 4);
     }
 
-    // sum the athletes highest scores (top 4 for ca)
+    // sum the athletes highest scores
     $athlete_total = array_sum($athlete_totals);
 
     if ($athlete_total) {
@@ -297,5 +244,6 @@ if (!$clubFilter) {
 ?>
 
 </div>
+<script src="assets/app.js"></script>
 </body>
 </html>

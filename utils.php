@@ -8,37 +8,26 @@ $client->setScopes([\Google_Service_Sheets::SPREADSHEETS]);
 $client->setAuthConfig(__DIR__ . '/.credentials.json');
 $sheets = new Google_Service_Sheets($client);
 
-$iaafData = json_decode(file_get_contents(dirname(__FILE__) . '/data/reference/iaaf.json'), true);
-$wmaData = [
-    'M' => json_decode(file_get_contents(dirname(__FILE__) . '/data/reference/wma-men.json'), true),
-    'F' => json_decode(file_get_contents(dirname(__FILE__) . '/data/reference/wma-women.json'), true)
-];
-$juniorWrData = [
-    'M' => json_decode(file_get_contents(dirname(__FILE__) . '/data/reference/wr-boys.json'), true),
-    // 'F' => json_decode(file_get_contents(dirname(__FILE__) . '/data/reference/wr-girls.json'), true)
-];
-
 loadEnv();
 
+$excludedEvents = ['1 mile', '60m', '60m Hurdles', '300m', '2000m', '70m'];
+
 function getData($filename, $comp) {
-	$content = str_replace(["\r\n", "\r"], "\n", file_get_contents($filename));
+    $content = str_replace(["\r\n", "\r"], "\n", file_get_contents($filename));
 
-    $meet = str_replace('/', ' ', basename($filename));
-    $meet = str_replace('.csv', '', $meet);
-    $meet = preg_replace('/([0-9]+)/', '#$1', $meet);
-    $meet = strtoupper($comp) . ' ' . ucwords($meet);
+    $meet = normaliseMeetName($filename, $comp);
 
-	$handle = fopen('php://memory', 'r+');
-	fwrite($handle, $content);
-	rewind($handle);
+    $handle = fopen('php://memory', 'r+');
+    fwrite($handle, $content);
+    rewind($handle);
 
-	$header = fgetcsv($handle, null, ';');
+    $header = fgetcsv($handle, null, ';');
 
-	$data = [];
-	while (($row = fgetcsv($handle, null, ';')) !== false) {
-		if (empty(array_filter($row)) || $row[0] != 'E') continue; // skip empty lines or lines that don't start with E (event?)
+    $data = [];
+    while (($row = fgetcsv($handle, null, ';')) !== false) {
+        if (empty(array_filter($row)) || $row[0] != 'E') continue; // skip empty lines or lines that don't start with E (event?)
 
-		$result = [
+        $result = [
             'meet' => $meet,
             'event' => normaliseEventName($row[4]),
             'result_str' => $row[10],
@@ -52,23 +41,126 @@ function getData($filename, $comp) {
             'dob' => strtotime($row[26]),
             'age' => (int)$row[29],
             'club' => str_replace(
-                    ['Queanbeyan Lac', 'Woden Thunder Athletics', 'Tuggeranong Tornadoes Little A', 'Tuggeranong Tornadoes Lac', 'Tuggeranong Lac', 'Belconnen Lac', 'South Canberra-Tuggeranong', 'Act Para-Athletics Talent Squa', 'Gungahlin Lac', 'Gungahlin Athletics Club', 'Murrumbateman Lac', 'Jindabyne Lac', 'Calwell Little Aths', 'Weston Creek Lac', 'Lanyon Lac', 'Act Masters Athletics', 'Act Masters Athletics Club', 'Bega Valley Little Athletics C', 'North Canberra-Gungahlin', 'Cooma Athletics Incorporated'],
-                    ['Queanbeyan Little Athletics', 'Woden Athletics', 'Tuggeranong Little Athletics', 'Tuggeranong Little Athletics', 'Tuggeranong Little Athletics', 'Belconnen Little Athletics', 'South Canberra Tuggeranong Athletics', 'ACT Para-Athletics Talent Squad', 'Gungahlin Athletics', 'Gungahlin Athletics', 'Murrumbateman Little Athletics', 'Jindabyne Little Athletics', 'Calwell Little Athletics', 'Weston Creek Little Athletics', 'Lanyon Little Athletics', 'ACT Masters Athletics', 'ACT Masters Athletics', 'Bega Valley Little Athletics', 'North Canberra-Gungahlin Athletics', '	Cooma Athletics'],
-                    $row[28]
-                ),
+                ['Queanbeyan Lac', 'Woden Thunder Athletics', 'Tuggeranong Tornadoes Little A', 'Tuggeranong Tornadoes Lac', 'Tuggeranong Lac', 'Belconnen Lac', 'South Canberra-Tuggeranong', 'Act Para-Athletics Talent Squa', 'Gungahlin Lac', 'Gungahlin Athletics Club', 'Murrumbateman Lac', 'Jindabyne Lac', 'Calwell Little Aths', 'Weston Creek Lac', 'Lanyon Lac', 'Act Masters Athletics', 'Act Masters Athletics Club', 'Bega Valley Little Athletics C', 'North Canberra-Gungahlin', 'Cooma Athletics Incorporated'],
+                ['Queanbeyan Little Athletics', 'Woden Athletics', 'Tuggeranong Little Athletics', 'Tuggeranong Little Athletics', 'Tuggeranong Little Athletics', 'Belconnen Little Athletics', 'South Canberra Tuggeranong Athletics', 'ACT Para-Athletics Talent Squad', 'Gungahlin Athletics', 'Gungahlin Athletics', 'Murrumbateman Little Athletics', 'Jindabyne Little Athletics', 'Calwell Little Athletics', 'Weston Creek Little Athletics', 'Lanyon Little Athletics', 'ACT Masters Athletics', 'ACT Masters Athletics', 'Bega Valley Little Athletics', 'North Canberra-Gungahlin Athletics', '	Cooma Athletics'],
+                $row[28]
+            ),
         ];
 
         if ($result['result_raw']) $data[] = $result;
-	}
+    }
 
     // array_pop($data);
 
-	fclose($handle);
+    fclose($handle);
 
-	return $data;
+    return $data;
 }
 
-function normaliseEventName ($eventName) {
+function loadCompetitionFiles($comp, $clubFilter) {
+    $files = glob(dirname(__FILE__) . '/data/' . $comp . '/*.csv');
+
+    if ($clubFilter) {
+        $files = array_filter($files, function ($file) {
+            return preg_match('/\/\d+\.csv$/', $file);
+        });
+    }
+
+    natsort($files);
+
+    return $files;
+}
+
+function loadCompetitionResults($files, $comp) {
+    $resultData = [];
+
+    foreach ($files as $file) {
+        $resultData = array_merge($resultData, getData($file, $comp));
+    }
+
+    return $resultData;
+}
+
+function filterExcludedEvents($resultData) {
+    global $excludedEvents;
+
+    return array_filter($resultData, function ($row) use ($excludedEvents) {
+        return !in_array($row['event'], $excludedEvents, true);
+    });
+}
+
+function buildMeetEventArray($resultData) {
+    $meetEventMap = [];
+
+    foreach ($resultData as $entry) {
+        $meet = $entry['meet'];
+        $event = $entry['event'];
+
+        if (!isset($meetEventMap[$meet])) {
+            $meetEventMap[$meet] = [];
+        }
+
+        if (!in_array($event, $meetEventMap[$meet])) {
+            $meetEventMap[$meet][] = $event;
+        }
+    }
+
+    $meetEventArray = [];
+
+    foreach ($meetEventMap as $meet => $events) {
+        $meetEventArray[] = [
+            'name' => $meet,
+            'events' => $events,
+        ];
+    }
+
+    return $meetEventArray;
+}
+
+function filterResultsByClub($resultData, $clubFilter) {
+    if (!$clubFilter) {
+        return $resultData;
+    }
+
+    return array_filter($resultData, function ($row) use ($clubFilter) {
+        return isset($row['club']) && $row['club'] == $clubFilter;
+    });
+}
+
+function groupResultsByAthlete($resultData) {
+    $athletes = [];
+
+    foreach ($resultData as $row) {
+        $key = $row['firstname'] . ' ' . $row['lastname'];
+
+        $athletes[$key]['events'][$row['event']][] = $row;
+        $athletes[$key]['club'] = $row['club'];
+        $athletes[$key]['age'] = $row['age'];
+    }
+
+    return $athletes;
+}
+
+function normaliseMeetName($filename, $comp) {
+    $basename = strtolower(pathinfo($filename, PATHINFO_FILENAME));
+    $basenameWithoutPrefix = preg_replace('/^\d+[-_]?/', '', $basename);
+
+    $specialMeetNames = [
+        'u20-open' => 'U20 & Opens Champs',
+        'u9-18' => 'U9-U18 Champs',
+    ];
+
+    if (isset($specialMeetNames[$basenameWithoutPrefix])) {
+        return $specialMeetNames[$basenameWithoutPrefix];
+    }
+
+    $meet = str_replace(['/', '-'], ' ', $basename);
+    $meet = preg_replace('/([0-9]+)/', '#$1', $meet);
+
+    return strtoupper($comp) . ' ' . ucwords($meet);
+}
+
+function normaliseEventName($eventName) {
     $patterns = [
         '/^1500S$/'   => '1500m Steeple',
         '/^2000S$/'   => '2000m Steeple',
@@ -117,103 +209,31 @@ function normaliseEventName ($eventName) {
     return $eventName;
 }
 
-function parseResult ($result_str) {
+function parseResult($result_str) {
     if (strstr($result_str, 'm')) {
         // distance in metres
         return [(float)$result_str, 'm'];
-    } else if (strstr($result_str, ':')) {
+    } elseif (strstr($result_str, ':')) {
         // time in minutes
         $parts = explode(':', $result_str);
         return [(int)$parts[0] * 60 + (float)$parts[1], 's'];
-    } else if (strstr($result_str, 's') || strstr($result_str, '.')) {
+    } elseif (strstr($result_str, 's') || strstr($result_str, '.')) {
         // time in seconds
         return [(float)$result_str, 's'];
-    } else {
-        return [null, null];
     }
+
+    return [null, null];
 }
 
-function calcClubParticipationaFactor ($athletes, $size) {
+function calcClubParticipationaFactor($athletes, $size) {
     return number_format($athletes / $size, 3);
 }
 
-function calcClubAdjustedTotal ($score, $cpf, $officials) {
+function calcClubAdjustedTotal($score, $cpf, $officials) {
     return $score * $cpf + $officials;
 }
 
-function calcScore_old ($age, $gender, $event, $result, $units) {
-    global $iaafData, $wmaData, $juniorWrData;
-
-    if ($age >= 20 && $age < 35) {
-        $age = 'Open';
-    } else if ($age > 34) {
-        // masters
-        // we convert the masters time/distance into an open value
-        $factor = $wmaData[$gender][$age][$event] ?? 1;
-
-        $result = $result * $factor;
-
-        $age = 'Open';
-    } else {
-        // U11-U20
-        // if (isset($iaafData[$gender][$age][$event]) && isset($wmaData[$gender]['Standard'][$event]) && isset($juniorWrData[$gender][$age][$event])) {
-        //     $tmp_result = $result * $wmaData[$gender]['Standard'][$event] / $juniorWrData[$gender][$age][$event];
-        //     $tmp_vals = $iaafData[$gender]['Open'][$event] ?? null;
-
-        //     if (in_array($event, ['Long Jump', 'Triple Jump', 'High Jump', 'Pole Vault'])) {
-        //         $tmp_result *= 100; // into cm
-        //     }
-
-        //     if ($tmp_vals != null) {
-        //         echo '<span style="background:pink">';
-        //         echo $units == 'm'
-        //             ? round($tmp_vals['a'] * pow($tmp_result - $tmp_vals['b'], $tmp_vals['c']))
-        //             : round($tmp_vals['a'] * pow($tmp_vals['b'] - $tmp_result, $tmp_vals['c']));
-
-        //         echo ' pts</span> ';
-        //     }
-        // }
-    }
-
-    // iaaf
-    $vals = $iaafData[$gender][$age][$event] ?? null;
-
-    if ($age < 20 && $vals == null) {
-        // if we didn't find the abc factor values in the iaaf table for this age/event and the athlete is under 20
-        // then look against the WR data and convert to an open value like we did for masters
-        if (isset($wmaData[$gender]['Standard'][$event]) && isset($juniorWrData[$gender][$age][$event])) {
-            $result = $result * $wmaData[$gender]['Standard'][$event] / $juniorWrData[$gender][$age][$event];
-            $vals = $iaafData[$gender]['Open'][$event] ?? null;
-        }
-    }
-
-    // if ($age < 17 && $vals == null) {
-    //     // if the event doesn't exist in the age they are, check up one
-    //     $vals = $iaafData[$gender][$age+1][$event] ?? null;
-    // }
-
-    // if ($age < 16 && $vals == null) {
-    //     // if the event doesn't exist in the age they are, check up two
-    //     $vals = $iaafData[$gender][$age+2][$event] ?? null;
-    // }
-
-    // if ($age < 18 && $vals == null) {
-    //     // if the event doesn't exist in the age they are, check down one
-    //     $vals = $iaafData[$gender][$age-1][$event] ?? null;
-    // }
-
-    if ($vals == null) return '?';
-
-    if (in_array($event, ['Long Jump', 'Triple Jump', 'High Jump', 'Pole Vault'])) {
-        $result *= 100; // into cm
-    }
-
-    return $units == 'm'
-        ? round($vals['a'] * pow($result - $vals['b'], $vals['c']))
-        : round($vals['a'] * pow($vals['b'] - $result, $vals['c']));
-}
-
-function loadEnv () {
+function loadEnv() {
     $lines = file(dirname(__FILE__) . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
     foreach ($lines as $line) {

@@ -1,0 +1,40 @@
+.act-score-btn {
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 0;
+    background: none;
+    color: darkorange;
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    bottom: -3px;
+    position: relative;
+    margin-right: 2px;
+}
+
+.act-score-btn svg {
+    width: 100%;
+    height: 100%;
+}
+
+.act-tooltip {
+    position: fixed;
+    background: #111;
+    color: #fff;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: pre-line;
+    max-width: 280px;
+    z-index: 9999;
+}
+
+li li:not(:has(button)) {
+    opacity: 0.3;
+}
+
+.athlete:not(:has(button)) {
+    display: none;
+}
