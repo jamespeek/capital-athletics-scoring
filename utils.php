@@ -20,7 +20,7 @@ function appConfig() {
     $config = [
         'score_base' => 800,
         'official_points' => 20,
-        'excluded_events' => ['60m', '60m Hurdles', '70m', '300m', '600m', '1 mile', '700m Walk', '1100m Walk', '2000m', '10000'],
+        'excluded_events' => ['60m', '60m Hurdles', '70m', '300m', '600m', '1000m', '1 mile', '700m Walk', '1100m Walk', '2000m', '10000m'],
         'special_meet_names' => [
             'u20-open' => 'U20 & Opens Champs',
             'u9-18' => 'U9-U18 Champs',
@@ -28,6 +28,7 @@ function appConfig() {
         'club_name_map' => [
             'Queanbeyan Lac' => 'Queanbeyan Little Athletics',
             'Woden Thunder Athletics' => 'Woden Athletics',
+            'Woden Athletics Club' => 'Woden Athletics',
             'Tuggeranong Tornadoes Little A' => 'Tuggeranong Little Athletics',
             'Tuggeranong Tornadoes Lac' => 'Tuggeranong Little Athletics',
             'Tuggeranong Lac' => 'Tuggeranong Little Athletics',
@@ -314,6 +315,7 @@ function normaliseEventName($eventName) {
         '/^2000$/'    => '2000m',
         '/^3000$/'    => '3000m',
         '/^5000$/'    => '5000m',
+        '/^10000$/'   => '10000m',
         '/^700W$/'    => '700m Walk',
         '/^1100W$/'   => '1100m Walk',
         '/^1500W$/'   => '1500m Walk',
