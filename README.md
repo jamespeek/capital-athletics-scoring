@@ -40,7 +40,7 @@ For champs files, keep the numeric prefix for sort order and suffix the file wit
 
 ## Optional URL parameters
 
-* `comp` Defaults to `ss`. It must match a directory inside `data`.
+* `comp` Defaults to `ss`. It must match a directory inside `data`; invalid values fall back to `ss`.
 * `verbose` Defaults to `false`. Use it to show the per-athlete working as well as the summary tables.
 * `athletes` Defaults to `true`. Use `athletes=false` to hide the athlete scores table in the full, unfiltered view.
 * `all_athletes` Defaults to `false`. Use `all_athletes=true` to expand the athlete scores table beyond the default top 20 rows.
@@ -94,6 +94,7 @@ Athletes also have a meet PF used for the club `CPF` calculation:
 * The top control row lets users toggle `Verbose`, toggle `Show athlete scores`, and filter to a single club.
 * In the full, unfiltered view, the athlete scores table shows the top 20 scored athletes by default and has a `Show all` link underneath.
 * In club-filtered view, athlete scores are always shown and the club scores / potential records sections are hidden.
+* In club-filtered view, the app intentionally uses only the numbered regular-season meet files and excludes champs files such as `8-u20-open.csv` and `9-u9-18.csv`.
 
 ## Tests
 

@@ -234,6 +234,28 @@ function scoringTestSuite() {
             assertContainsValue('Meet PF', $html);
             assertContainsValue('Total athlete score after combining the counted event scores for this view.', $html);
         },
+        'render_athlete_scores_table_show_all_link_preserves_current_query_state' => function () {
+            $athletes = [];
+
+            for ($i = 1; $i <= 21; $i++) {
+                $name = sprintf('Athlete %02d', $i);
+                $athletes[$name] = [
+                    'display_name' => $name,
+                    'clubs' => ['Club ' . $i],
+                    'club' => 'Club ' . $i,
+                    'meet_pf' => 1,
+                    'score' => 200 - $i,
+                ];
+            }
+
+            $html = renderAthleteScoresTable($athletes, false, false, [
+                'comp' => 'hn',
+                'verbose' => '1',
+                'records' => '1',
+            ]);
+
+            assertContainsValue('?comp=hn&amp;verbose=1&amp;records=1&amp;all_athletes=1', $html);
+        },
         'render_athlete_scores_table_uses_competition_places_for_tied_scores' => function () {
             $athletes = [
                 'Alex Example' => [
@@ -348,6 +370,8 @@ function scoringTestSuite() {
             assertContainsValue('name="athletes" value="1" checked disabled', $html);
             assertNotContainsValue('toggle-fallback', $html);
             assertContainsValue('<option value="Woden Athletics" selected>', $html);
+            assertNotContainsValue('name="verbose" value="1" type="hidden"', $html);
+            assertNotContainsValue('type="hidden" name="club"', $html);
         },
         'render_view_toggles_adds_athlete_fallback_when_no_club_filter' => function () {
             $html = renderViewToggles([], false, false, false, ['Woden Athletics']);
@@ -356,6 +380,18 @@ function scoringTestSuite() {
             assertContainsValue('Show athlete scores', $html);
             assertContainsValue('<option value="">All clubs</option>', $html);
             assertNotContainsValue('disabled', $html);
+        },
+        'normalise_competition_key_rejects_invalid_or_unknown_values' => function () {
+            assertSameValue('ss', normaliseCompetitionKey('../reference'));
+            assertSameValue('ss', normaliseCompetitionKey('does-not-exist'));
+            assertSameValue('hn', normaliseCompetitionKey('hn'));
+        },
+        'load_competition_files_in_club_view_intentionally_excludes_champs_files' => function () {
+            $files = array_values(loadCompetitionFiles('ss', 'Woden Athletics'));
+
+            assertContainsValue('/data/ss/1.csv', $files[0] ?? '');
+            assertTrueValue(!in_array('/Volumes/www/peek.net.au/dev/scoring/data/ss/8-u20-open.csv', $files, true), 'Expected club-filtered files to exclude U20/Open champs');
+            assertTrueValue(!in_array('/Volumes/www/peek.net.au/dev/scoring/data/ss/9-u9-18.csv', $files, true), 'Expected club-filtered files to exclude U9-U18 champs');
         },
         'local_ss_summary_snapshot_matches_expected_values' => function () {
             $files = loadCompetitionFiles('ss', false);

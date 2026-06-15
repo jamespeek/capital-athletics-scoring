@@ -136,6 +136,7 @@ function loadCompetitionFiles($comp, $clubFilter) {
     $files = glob(dirname(__FILE__) . '/data/' . $comp . '/*.csv');
 
     if ($clubFilter) {
+        // Club-filtered view intentionally excludes champs files and only uses numbered meet files.
         $files = array_filter($files, function ($file) {
             return preg_match('/\/\d+\.csv$/', $file);
         });
@@ -154,6 +155,41 @@ function loadCompetitionResults($files, $comp) {
     }
 
     return $resultData;
+}
+
+function availableCompetitionKeys() {
+    $paths = glob(dirname(__FILE__) . '/data/*', GLOB_ONLYDIR) ?: [];
+    $keys = [];
+
+    foreach ($paths as $path) {
+        $basename = basename($path);
+
+        if (preg_match('/^[a-z0-9_-]+$/i', $basename)) {
+            $keys[$basename] = true;
+        }
+    }
+
+    return array_keys($keys);
+}
+
+function normaliseCompetitionKey($comp) {
+    $comp = trim((string)$comp);
+
+    if ($comp === '') {
+        return 'ss';
+    }
+
+    if (!preg_match('/^[a-z0-9_-]+$/i', $comp)) {
+        return 'ss';
+    }
+
+    $availableComps = availableCompetitionKeys();
+
+    if (in_array($comp, $availableComps, true)) {
+        return $comp;
+    }
+
+    return 'ss';
 }
 
 function filterExcludedEvents($resultData) {

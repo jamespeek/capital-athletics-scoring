@@ -1,8 +1,12 @@
 <?php
 
+include_once 'utils.php';
+include_once 'scoring.php';
+include_once 'render.php';
+
 $verbose = filter_var($_GET['verbose'] ?? false, FILTER_VALIDATE_BOOLEAN);
 $clubFilter = $_GET['club'] ?? false;
-$comp = $_GET['comp'] ?? 'ss';
+$comp = normaliseCompetitionKey($_GET['comp'] ?? 'ss');
 $showAthletes = filter_var($_GET['athletes'] ?? true, FILTER_VALIDATE_BOOLEAN);
 $showAllAthletes = filter_var($_GET['all_athletes'] ?? false, FILTER_VALIDATE_BOOLEAN);
 $showPotentialRecords = filter_var($_GET['records'] ?? false, FILTER_VALIDATE_BOOLEAN);
@@ -10,10 +14,6 @@ $showAthletes = $clubFilter ? true : $showAthletes;
 
 $assetCssVersion = @filemtime(__DIR__ . '/assets/app.css') ?: time();
 $assetJsVersion = @filemtime(__DIR__ . '/assets/app.js') ?: time();
-
-include_once 'utils.php';
-include_once 'scoring.php';
-include_once 'render.php';
 
 // Pull in the club size and officials data we need for the final club scores.
 $clubsData = loadClubData();
@@ -64,6 +64,16 @@ if ($showPotentialRecords) {
     $toggleQueryParams['records'] = '1';
 }
 
+$athleteTableQueryParams = $toggleQueryParams;
+
+if ($verbose) {
+    $athleteTableQueryParams['verbose'] = '1';
+}
+
+if ($clubFilter) {
+    $athleteTableQueryParams['club'] = $clubFilter;
+}
+
 ob_start();
 
 echo renderDataWarnings($unknownDobWarnings);
@@ -75,7 +85,7 @@ if ($verbose) {
 }
 
 if ($showAthletes) {
-    echo renderAthleteScoresTable($athletes, $clubFilter, $showAllAthletes, $toggleQueryParams);
+    echo renderAthleteScoresTable($athletes, $clubFilter, $showAllAthletes, $athleteTableQueryParams);
 }
 
 // output club scores
