@@ -14,9 +14,12 @@ Create `.env` file with following data:
 
 `GOOGLE_SPREADSHEET_ID=xxx` Google Sheet ID (for scoring metadata)
 
+
 ### Google credentials
 
-Create `.credentials.json` in the project root with credentials that can read the Google Sheet above.
+Create `.credentials.json` in the project root with credentials that can read the Google Sheet which houses the comp metadata:
+
+https://docs.google.com/spreadsheets/d/1TqaJoy5OCHdzD-nqdvmxRgUtg41Qk67aL3DrN4xza5A
 
 ### Data files
 
@@ -45,7 +48,7 @@ For champs files, keep the numeric prefix for sort order and suffix the file wit
 
 The app reads all CSV files for the selected competition, normalises the meet and event names, and combines them into one result set.
 
-The base score and excluded events are set in `appConfig()` in `utils.php`.
+The base score, excluded events, and excluded event dates are set in `appConfig()` in `utils.php`.
 
 The remaining results are grouped by athlete and then by event. For each event:
 
@@ -79,6 +82,7 @@ The final club adjusted score is:
 
 The scoring code also includes a few explicit business-rule overrides that sit on top of the general rules:
 
+* Specific event/date exclusions can be added in `appConfig()['excluded_event_dates']`. These dates are treated as athlete-specific extra opportunities: athletes who did not contest them are not penalised in participation factor, while athletes who did contest them can still use the result for scoring and get the corresponding participation credit. This is useful when an event was run as an invitational.
 * For `U9-U18 Champs`, athletes aged `12` and under are scored against their own age records instead of the usual "one age up" junior lookup.
 * For masters hurdles, `80/100/110m Hurdles` are mapped through WMA as `Short Hurdles` and compared against Open `110m Hurdles` for men or Open `100m Hurdles` for women.
 * For masters hurdles, `200/300/400m Hurdles` are mapped through WMA as `Long Hurdles` and compared against Open `400m Hurdles`.

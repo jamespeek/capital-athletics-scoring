@@ -10,6 +10,10 @@ function renderScoreStatusLabel($status) {
     return $labels[$status] ?? $status;
 }
 
+function formatCopiedResult($result) {
+    return preg_replace('/\s*[a-zA-Z]+$/', '', trim((string)$result));
+}
+
 function buildScoreTooltipLines($scoreData) {
     $meta = $scoreData['meta'] ?? [];
     $input = $meta['input'] ?? [];
@@ -217,5 +221,65 @@ function renderClubScoresTable($clubs) {
     }
 
     echo '</table>';
+    return ob_get_clean();
+}
+
+function renderPotentialRecordsTable($potentialRecords) {
+    if (!$potentialRecords) {
+        return '';
+    }
+
+    $recordsBySource = [];
+
+    foreach ($potentialRecords as $potentialRecord) {
+        $source = (string)($potentialRecord['record_source'] ?? 'Unknown');
+        $recordsBySource[$source][] = $potentialRecord;
+    }
+
+    ob_start();
+    echo '<h2>Potential records</h2>';
+
+    foreach ($recordsBySource as $source => $sourceRecords) {
+        echo '<h3>' . htmlspecialchars($source) . '</h3>';
+        echo '<table class="table table-bordered table-striped table-sm">';
+        echo '<tr>';
+        echo '<th>Athlete</th>';
+        echo '<th>Age</th>';
+        echo '<th></th>';
+        echo '<th>Club</th>';
+        echo '<th>Event</th>';
+        echo '<th>Meet</th>';
+        echo '<th>Result</th>';
+        echo '<th>Weight</th>';
+        echo '<th>Record</th>';
+        echo '<th>Record holder</th>';
+        echo '<th>Record age</th>';
+        echo '</tr>';
+
+        foreach ($sourceRecords as $potentialRecord) {
+            $copyText = implode("\t", [
+                $potentialRecord['athlete'],
+                formatCopiedResult($potentialRecord['result']),
+                $potentialRecord['club'] ?? '',
+                $potentialRecord['meet_date_iso'] ?? '',
+            ]);
+
+            echo '<tr class="potential-record-row" data-copy="' . htmlspecialchars($copyText, ENT_QUOTES, 'UTF-8') . '">';
+            echo '<td>' . htmlspecialchars($potentialRecord['athlete']) . '</td>';
+            echo '<td>' . htmlspecialchars((string)$potentialRecord['age']) . '</td>';
+            echo '<td>' . htmlspecialchars((string)($potentialRecord['gender'] ?? '')) . '</td>';
+            echo '<td>' . htmlspecialchars((string)($potentialRecord['club'] ?? '')) . '</td>';
+            echo '<td>' . htmlspecialchars($potentialRecord['event']) . '</td>';
+            echo '<td>' . htmlspecialchars($potentialRecord['meet']) . '</td>';
+            echo '<td>' . htmlspecialchars((string)$potentialRecord['result']) . '</td>';
+            echo '<td>' . htmlspecialchars((string)($potentialRecord['weight'] ?? '')) . '</td>';
+            echo '<td>' . htmlspecialchars((string)($potentialRecord['record_result'] ?? '')) . '</td>';
+            echo '<td>' . htmlspecialchars((string)($potentialRecord['record_name'] ?? '')) . '</td>';
+            echo '<td>' . htmlspecialchars((string)($potentialRecord['record_age'] ?? '')) . '</td>';
+            echo '</tr>';
+        }
+
+        echo '</table>';
+    }
     return ob_get_clean();
 }

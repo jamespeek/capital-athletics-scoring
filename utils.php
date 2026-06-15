@@ -21,6 +21,12 @@ function appConfig() {
         'score_base' => 800,
         'official_points' => 20,
         'excluded_events' => ['60m', '60m Hurdles', '70m', '300m', '600m', '1000m', '1 mile', '700m Walk', '1100m Walk', '2000m', '10000m'],
+        'excluded_event_dates' => [
+            [
+                'event' => 'Pole Vault',
+                'date' => '2026-03-26',
+            ],
+        ],
         'special_meet_names' => [
             'u20-open' => 'U20 & Opens Champs',
             'u9-18' => 'U9-U18 Champs',
@@ -63,12 +69,20 @@ function getData($filename, $comp) {
     rewind($handle);
 
     $header = fgetcsv($handle, null, ';');
+    $meetDate = null;
+    $meetDateTimestamp = null;
+
+    if (($header[0] ?? null) === 'H') {
+        $meetDate = trim((string)($header[2] ?? ''));
+        $meetDateTimestamp = $meetDate !== '' ? strtotime($meetDate) : null;
+    }
 
     $data = [];
     while (($row = fgetcsv($handle, null, ';')) !== false) {
         if (empty(array_filter($row)) || $row[0] !== 'E') continue; // skip empty lines or lines that don't start with E (event?)
 
         [$resultRaw, $resultUnits] = parseMeetResultData($row[10]);
+        $rawLastName = (string)$row[22];
 
         $result = [
             'meet' => $meet,
@@ -78,12 +92,15 @@ function getData($filename, $comp) {
             'result_units' => $resultUnits,
             'wind' => (float)$row[12],
             'place' => (int)$row[14],
-            'lastname' => preg_replace('/\s+[T0-9\(\)-]+/', '', $row[22]),
-            'firstname' => $row[23],
+            'lastname' => normalisePersonNamePart(preg_replace('/\s+[T0-9\(\)-]+/', '', $rawLastName)),
+            'firstname' => normalisePersonNamePart($row[23]),
             'gender' => $row[25],
             'dob' => strtotime($row[26]),
             'age' => (int)$row[29],
             'club' => normaliseClubName($row[28]),
+            'is_para' => preg_match('/\(\d+\)/', $rawLastName) === 1,
+            'meet_date' => $meetDate,
+            'meet_date_ts' => $meetDateTimestamp,
         ];
 
         if ($result['result_raw']) $data[] = $result;
@@ -124,8 +141,31 @@ function filterExcludedEvents($resultData) {
     $excludedEvents = appConfig()['excluded_events'];
 
     return array_filter($resultData, function ($row) use ($excludedEvents) {
-        return !in_array($row['event'], $excludedEvents, true);
+        if (in_array($row['event'], $excludedEvents, true)) {
+            return false;
+        }
+
+        return true;
     });
+}
+
+function normaliseMeetDate($meetDate, $meetDateTimestamp = null) {
+    if (is_int($meetDateTimestamp) || is_float($meetDateTimestamp)) {
+        return date('Y-m-d', (int)$meetDateTimestamp);
+    }
+
+    $meetDate = trim((string)$meetDate);
+    if ($meetDate === '') {
+        return null;
+    }
+
+    $parsedTimestamp = strtotime($meetDate);
+
+    if ($parsedTimestamp === false) {
+        return null;
+    }
+
+    return date('Y-m-d', $parsedTimestamp);
 }
 
 function buildMeetEventArray($resultData) {
@@ -134,9 +174,15 @@ function buildMeetEventArray($resultData) {
     foreach ($resultData as $entry) {
         $meet = $entry['meet'];
         $event = $entry['event'];
+        $meetDate = $entry['meet_date'] ?? null;
+        $meetDateTimestamp = $entry['meet_date_ts'] ?? null;
 
         if (!isset($meetEventMap[$meet])) {
             $meetEventMap[$meet] = [];
+        }
+
+        if (isExcludedEventDate($event, $meetDate, $meetDateTimestamp)) {
+            continue;
         }
 
         if (!in_array($event, $meetEventMap[$meet])) {
@@ -154,6 +200,26 @@ function buildMeetEventArray($resultData) {
     }
 
     return $meetEventArray;
+}
+
+function isExcludedEventDate($event, $meetDate, $meetDateTimestamp = null) {
+    $excludedEventDates = appConfig()['excluded_event_dates'] ?? [];
+    $normalisedMeetDate = normaliseMeetDate($meetDate, $meetDateTimestamp);
+
+    foreach ($excludedEventDates as $excludedEventDate) {
+        $excludedEvent = $excludedEventDate['event'] ?? null;
+        $excludedDate = $excludedEventDate['date'] ?? null;
+
+        if ($excludedEvent !== $event) {
+            continue;
+        }
+
+        if ($excludedDate === $normalisedMeetDate) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function filterResultsByClub($resultData, $clubFilter) {
@@ -175,6 +241,7 @@ function groupResultsByAthlete($resultData) {
         $athletes[$key]['events'][$row['event']][] = $row;
         $athletes[$key]['club'] = $row['club'];
         $athletes[$key]['age'] = $row['age'];
+        $athletes[$key]['is_para'] = $row['is_para'];
     }
 
     return $athletes;
@@ -210,6 +277,7 @@ function buildClubSummaries($clubs, $clubsData, $meetEventArray) {
 function buildAthleteSummaries($athletes, $clubsData, $meetEventArray, $clubFilter) {
     $athleteSummaries = [];
     $clubs = [];
+    $potentialRecords = [];
 
     foreach ($athletes as $athleteName => $athlete) {
         $eventSummaries = [];
@@ -219,6 +287,49 @@ function buildAthleteSummaries($athletes, $clubsData, $meetEventArray, $clubFilt
             $eventSummary = buildAthleteEventSummary($athlete, $eventName, $eventResults, $meetEventArray);
             $eventSummaries[] = $eventSummary;
             $athleteTotals[] = $eventSummary['final_score'];
+
+            foreach ($eventSummary['meets'] as $meetSummary) {
+                $scoreData = $meetSummary['score_data'] ?? null;
+                $matchedEventResult = null;
+
+                if ($scoreData === null || empty($scoreData['potential_record'])) {
+                    continue;
+                }
+
+                if (!empty($athlete['is_para'])) {
+                    continue;
+                }
+
+                if (shouldIgnorePotentialRecord($athlete['club'], $scoreData['meta']['record']['source'] ?? null)) {
+                    continue;
+                }
+
+                foreach ($eventResults as $eventResult) {
+                    if (($eventResult['meet'] ?? null) === $meetSummary['name']) {
+                        $matchedEventResult = $eventResult;
+                        break;
+                    }
+                }
+
+                $potentialRecords[] = [
+                    'athlete' => $athleteName,
+                    'age' => $athlete['age'],
+                    'gender' => $matchedEventResult['gender'] ?? $eventResults[0]['gender'] ?? null,
+                    'club' => $athlete['club'],
+                    'event' => $eventName,
+                    'meet' => $meetSummary['name'],
+                    'meet_date' => $matchedEventResult['meet_date'] ?? null,
+                    'meet_date_ts' => $matchedEventResult['meet_date_ts'] ?? null,
+                    'meet_date_iso' => !empty($matchedEventResult['meet_date_ts']) ? date('Y-m-d', (int)$matchedEventResult['meet_date_ts']) : '',
+                    'result' => $meetSummary['result_str'],
+                    'weight' => $scoreData['meta']['record']['weight'] ?? null,
+                    'record_result' => $scoreData['meta']['record']['result'] ?? null,
+                    'record_name' => $scoreData['meta']['record']['name'] ?? null,
+                    'record_age' => $scoreData['meta']['display']['matched_age'] ?? null,
+                    'record_source' => $scoreData['meta']['record']['source'] ?? null,
+                    'percentage' => $scoreData['meta']['adjustment']['percentage'] ?? null,
+                ];
+            }
         }
 
         if (!$clubFilter) {
@@ -252,11 +363,84 @@ function buildAthleteSummaries($athletes, $clubsData, $meetEventArray, $clubFilt
         $clubs[$athletes[$athleteName]['club']]['athletes'][] = $athleteName;
     }
 
+    usort($potentialRecords, function ($a, $b) {
+        $sourceCompare = strcasecmp((string)($a['record_source'] ?? ''), (string)($b['record_source'] ?? ''));
+        if ($sourceCompare !== 0) {
+            return $sourceCompare;
+        }
+
+        $genderCompare = strcasecmp((string)($a['gender'] ?? ''), (string)($b['gender'] ?? ''));
+        if ($genderCompare !== 0) {
+            return $genderCompare;
+        }
+
+        $ageCompare = scorePotentialRecordAgeSortKey($a['record_age'] ?? null) <=> scorePotentialRecordAgeSortKey($b['record_age'] ?? null);
+        if ($ageCompare !== 0) {
+            return $ageCompare;
+        }
+
+        $eventCompare = strcasecmp((string)($a['event'] ?? ''), (string)($b['event'] ?? ''));
+        if ($eventCompare !== 0) {
+            return $eventCompare;
+        }
+
+        $resultCompare = ((float)($a['percentage'] ?? 0)) <=> ((float)($b['percentage'] ?? 0));
+        if ($resultCompare !== 0) {
+            return $resultCompare;
+        }
+
+        return strcasecmp((string)($a['athlete'] ?? ''), (string)($b['athlete'] ?? ''));
+    });
+
     return [
         'athletes' => $athletes,
         'athlete_summaries' => $athleteSummaries,
         'clubs' => $clubs,
+        'potential_records' => $potentialRecords,
     ];
+}
+
+function shouldIgnorePotentialRecord($clubName, $recordSource) {
+    if ($recordSource !== 'act-best.csv') {
+        return false;
+    }
+
+    $excludedOrigins = [
+        'Victoria',
+        'New South Wales',
+        'Queensland',
+        'South Australia',
+        'Tasmania',
+        'Western Australia',
+        'Northern Territory',
+        'International',
+    ];
+
+    foreach ($excludedOrigins as $origin) {
+        if (stripos((string)$clubName, $origin) !== false) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function scorePotentialRecordAgeSortKey($recordAge) {
+    $recordAge = trim((string)$recordAge);
+
+    if ($recordAge === '') {
+        return 0;
+    }
+
+    if (strcasecmp($recordAge, 'Open') === 0) {
+        return OPEN_AGE_SENTINEL;
+    }
+
+    if (preg_match('/^U(\d+)$/i', $recordAge, $matches)) {
+        return (int)$matches[1];
+    }
+
+    return 0;
 }
 
 function sortClubsByAdjustedScore($clubs) {
@@ -287,6 +471,22 @@ function normaliseClubName($clubName) {
     $clubNameMap = appConfig()['club_name_map'];
 
     return $clubNameMap[$clubName] ?? $clubName;
+}
+
+function normalisePersonNamePart($namePart) {
+    $namePart = trim((string)$namePart);
+
+    if ($namePart === '' || preg_match('/[a-z]/', $namePart)) {
+        return $namePart;
+    }
+
+    return preg_replace_callback('/[A-Za-z]+(?:[\'-][A-Za-z]+)*/', function ($matches) {
+        $segment = strtolower($matches[0]);
+
+        return preg_replace_callback('/(^|[\'-])[a-z]/', function ($partMatches) {
+            return strtoupper($partMatches[0]);
+        }, $segment);
+    }, $namePart);
 }
 
 function normaliseEventName($eventName) {

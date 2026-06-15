@@ -19,6 +19,7 @@ function calcScore($age, $gender, $eventName, $rawResult, $useOwnAgeLookup = fal
     $scoreData = [
         'score' => null,
         'status' => null,
+        'potential_record' => null,
         'meta' => [
             'input' => [
                 'age' => $ageRaw,
@@ -125,6 +126,14 @@ function calcScore($age, $gender, $eventName, $rawResult, $useOwnAgeLookup = fal
     $scoreData['status'] = 'ok';
     $scoreData['meta']['adjustment']['percentage'] = $percentage;
 
+    if ($percentage > 1) {
+        $scoreData['potential_record'] = [
+            'percentage' => $percentage,
+            'record' => $scoreData['meta']['record'],
+            'display' => $scoreData['meta']['display'],
+        ];
+    }
+
     return $scoreData;
 }
 
@@ -134,6 +143,14 @@ function buildAthleteEventSummary($athlete, $eventName, $eventResults, $meetEven
     $bestScore = 0;
     $offered = 0;
     $entered = 0;
+    $processedMeetNames = [];
+    $calcParticipationScore = static function ($enteredCount, $offeredCount) {
+        if ($offeredCount <= 0) {
+            return 0;
+        }
+
+        return min($enteredCount, $offeredCount) / $offeredCount;
+    };
 
     foreach ($meetEvents as $meet) {
         if (!in_array($eventName, $meet['events'])) {
@@ -151,6 +168,7 @@ function buildAthleteEventSummary($athlete, $eventName, $eventResults, $meetEven
         }
 
         $offered++;
+        $processedMeetNames[$meetName] = true;
 
         $meetSummary = [
             'name' => $meetName,
@@ -187,11 +205,49 @@ function buildAthleteEventSummary($athlete, $eventName, $eventResults, $meetEven
             break;
         }
 
-        $meetSummary['participation_score'] = $offered > 0 ? $entered / $offered : 0;
+        $meetSummary['participation_score'] = $calcParticipationScore($entered, $offered);
         $meetSummaries[] = $meetSummary;
     }
 
-    $participationScore = $offered > 0 ? $entered / $offered : 0;
+    foreach ($eventResults as $eventResult) {
+        $meetName = $eventResult['meet'] ?? null;
+
+        if (!$eventResult['result_raw'] || $meetName === null || isset($processedMeetNames[$meetName])) {
+            continue;
+        }
+
+        $processedMeetNames[$meetName] = true;
+
+        $meetSummary = [
+            'name' => $meetName,
+            'result_str' => $eventResult['result_str'],
+            'score_data' => null,
+            'participation_score' => $offered > 0 ? $entered / $offered : 0,
+            'has_missing_record' => false,
+        ];
+
+        $useOwnAgeLookup = $meetName === $specialMeetNames['u9-18'] && $eventResult['age'] <= 12;
+
+        $meetSummary['score_data'] = calcScore(
+            $eventResult['age'],
+            $eventResult['gender'],
+            $eventResult['event'],
+            $eventResult['result_raw'],
+            $useOwnAgeLookup
+        );
+        $meetSummary['has_missing_record'] = $meetSummary['score_data']['status'] === 'no_record';
+
+        if ($meetSummary['score_data']['score'] !== null && $meetSummary['score_data']['score'] > $bestScore) {
+            $bestScore = $meetSummary['score_data']['score'];
+        }
+
+        $offered++;
+        $entered++;
+        $meetSummary['participation_score'] = $calcParticipationScore($entered, $offered);
+        $meetSummaries[] = $meetSummary;
+    }
+
+    $participationScore = $calcParticipationScore($entered, $offered);
     $finalScore = round($bestScore * $participationScore);
 
     return [

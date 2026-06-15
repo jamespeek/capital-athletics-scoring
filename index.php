@@ -40,6 +40,7 @@ $athletes = groupResultsByAthlete($resultData);
 $summaryData = buildAthleteSummaries($athletes, $clubsData, $meetEventArray, $clubFilter);
 $athletes = $summaryData['athletes'];
 $clubs = $summaryData['clubs'];
+$potentialRecords = $summaryData['potential_records'];
 $output = renderAthleteSummaries($summaryData['athlete_summaries']);
 
 // Put the highest-scoring athletes at the top of the summary table.
@@ -58,6 +59,8 @@ if (!$clubFilter) {
     $clubs = buildClubSummaries($clubs, $clubsData, $meetEventArray);
     echo renderClubScoresTable($clubs);
 }
+
+echo renderPotentialRecordsTable($potentialRecords);
 
 $pageContent = ob_get_clean();
 
