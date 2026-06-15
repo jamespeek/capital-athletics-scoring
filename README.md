@@ -14,7 +14,6 @@ Create `.env` file with following data:
 
 `GOOGLE_SPREADSHEET_ID=xxx` Google Sheet ID (for scoring metadata)
 
-
 ### Google credentials
 
 Create `.credentials.json` in the project root with credentials that can read the Google Sheet which houses the comp metadata:
@@ -62,9 +61,9 @@ The remaining results are grouped by athlete and then by event. For each event:
 
 The points score for each result is based on ACT record data in `data/reference/combined-act.csv` plus WMA adjustment tables for masters athletes:
 
-* Under-35 athletes are scored against the next age group up.
+* Athletes are scored against their correct age group record at the time of the event
 * Athletes aged 35 and over are adjusted using WMA factors and then compared against Open records.
-* Time events and field events are compared differently so that a stronger performance always produces a higher score.
+* Timed events and field events are compared differently so that a stronger performance always produces a higher score.
 * The final points value is calculated by multiplying the performance ratio by the base score from `appConfig()` in `utils.php` (currently `800`) and rounding to a whole number.
 
 Athlete totals are then calculated:
@@ -72,9 +71,14 @@ Athlete totals are then calculated:
 * In the full competition view for CA, only the athlete's top 4 event scores count.
 * In club-filtered view, all scored events count.
 
+Athletes also have a meet PF used for the club `CPF` calculation:
+
+* meet PF: distinct meets attended divided by the total meets in the current competition view
+* this meet PF is separate from the existing event-level PF used in athlete scoring
+* athletes are grouped by display name plus a normalised DOB key, with ambiguous swapped month/day DOBs treated as the same identity
+
 Club totals are built from the summed athlete totals and then adjusted using:
 
-* `CPF old`: athletes entered divided by club size
 * `CPF`: the average club-specific athlete meet PF for the club
 * officials bonus: `20` points for each official recorded for each meet
 
@@ -82,12 +86,6 @@ The club score columns are:
 
 * `Adj`: `club athlete total * CPF`
 * `Total`: `Adj + officials bonus`
-
-Athletes also have a meet PF used for the club `CPF` calculation:
-
-* meet PF: distinct meets attended divided by the total meets in the current competition view
-* this meet PF is separate from the existing event-level PF used in athlete scoring
-* athletes are grouped by display name plus a normalised DOB key, with ambiguous swapped month/day DOBs treated as the same identity
 
 ## UI behaviour
 
