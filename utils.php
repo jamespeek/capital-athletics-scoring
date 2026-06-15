@@ -3,12 +3,22 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use Google\Service\Sheets as Google_Service_Sheets;
 
-$client = new Google_Client();
-$client->setScopes([\Google_Service_Sheets::SPREADSHEETS]);
-$client->setAuthConfig(__DIR__ . '/.credentials.json');
-$sheets = new Google_Service_Sheets($client);
+function getSheetsService() {
+    static $sheets = null;
 
-loadEnv();
+    if ($sheets !== null) {
+        return $sheets;
+    }
+
+    loadEnv();
+
+    $client = new Google_Client();
+    $client->setScopes([\Google_Service_Sheets::SPREADSHEETS]);
+    $client->setAuthConfig(__DIR__ . '/.credentials.json');
+    $sheets = new Google_Service_Sheets($client);
+
+    return $sheets;
+}
 
 function appConfig() {
     static $config = null;
@@ -53,7 +63,12 @@ function appConfig() {
             'Bega Valley Little Athletics C' => 'Bega Valley Little Athletics',
             'North Canberra-Gungahlin' => 'North Canberra-Gungahlin Athletics',
             'Cooma Athletics Incorporated' => 'Cooma Athletics',
-            'Goulburn-Mulwaree' => 'Goulburn-Mulwaree Athletics'
+            'Goulburn-Mulwaree' => 'Goulburn-Mulwaree Athletics',
+            'New South Wales' => 'Athletics New South Wales',
+            'Bega Valley Athletics Club' => 'Bega Valley Little Athletics',
+            'Queensland' => 'Athletics Queensland',
+            'Victoria' => 'Athletics Victoria',
+            'Western Australia' => 'Athletics West',
         ],
     ];
 
@@ -69,7 +84,7 @@ function getData($filename, $comp) {
     fwrite($handle, $content);
     rewind($handle);
 
-    $header = fgetcsv($handle, null, ';');
+    $header = fgetcsv($handle, null, ';', '"', '\\');
     $meetDate = null;
     $meetDateTimestamp = null;
 
@@ -79,11 +94,13 @@ function getData($filename, $comp) {
     }
 
     $data = [];
-    while (($row = fgetcsv($handle, null, ';')) !== false) {
+    while (($row = fgetcsv($handle, null, ';', '"', '\\')) !== false) {
         if (empty(array_filter($row)) || $row[0] !== 'E') continue; // skip empty lines or lines that don't start with E (event?)
 
         [$resultRaw, $resultUnits] = parseMeetResultData($row[10]);
         $rawLastName = (string)$row[22];
+        $dobRaw = trim((string)$row[26]);
+        $dobTimestamp = $dobRaw !== '' ? strtotime($dobRaw) : false;
 
         $result = [
             'meet' => $meet,
@@ -96,8 +113,8 @@ function getData($filename, $comp) {
             'lastname' => normalisePersonNamePart(preg_replace('/\s+[T0-9\(\)-]+/', '', $rawLastName)),
             'firstname' => normalisePersonNamePart($row[23]),
             'gender' => $row[25],
-            'dob_raw' => trim((string)$row[26]),
-            'dob' => strtotime($row[26]),
+            'dob_raw' => $dobRaw,
+            'dob' => $dobTimestamp !== false ? $dobTimestamp : null,
             'age' => (int)$row[29],
             'club' => normaliseClubName($row[28]),
             'is_para' => preg_match('/\(\d+\)/', $rawLastName) === 1,
@@ -278,12 +295,8 @@ function buildAthleteDobIdentityKey($dobRaw, $dobTimestamp = null) {
         }
     }
 
-    if ($dobTimestamp) {
+    if (is_int($dobTimestamp) || is_float($dobTimestamp) || (is_string($dobTimestamp) && is_numeric($dobTimestamp))) {
         return date('Y-m-d', (int)$dobTimestamp);
-    }
-
-    if ($dobRaw !== '') {
-        return $dobRaw;
     }
 
     return 'unknown-dob';
@@ -297,7 +310,36 @@ function sortAthletesByScore($athletes) {
     return $athletes;
 }
 
+function athleteIsEligibleForMeet($athlete, $meetName) {
+    $specialMeetNames = appConfig()['special_meet_names'];
+    $age = (int)($athlete['age'] ?? 0);
+
+    if ($meetName === $specialMeetNames['u9-18'] && $age > 17) {
+        return false;
+    }
+
+    if ($meetName === $specialMeetNames['u20-open'] && $age < 18) {
+        return false;
+    }
+
+    return true;
+}
+
 function buildAthleteMeetParticipationData($athlete, $meetEventArray) {
+    $attendedMeetNames = [];
+
+    foreach ($athlete['events'] as $eventResults) {
+        foreach ($eventResults as $eventResult) {
+            $meetName = $eventResult['meet'] ?? null;
+
+            if (!$eventResult['result_raw'] || $meetName === null) {
+                continue;
+            }
+
+            $attendedMeetNames[$meetName] = true;
+        }
+    }
+
     $eligibleMeetNames = [];
 
     foreach ($meetEventArray as $meet) {
@@ -307,20 +349,8 @@ function buildAthleteMeetParticipationData($athlete, $meetEventArray) {
             continue;
         }
 
-        $eligibleMeetNames[$meetName] = true;
-    }
-
-    $attendedMeetNames = [];
-
-    foreach ($athlete['events'] as $eventResults) {
-        foreach ($eventResults as $eventResult) {
-            $meetName = $eventResult['meet'] ?? null;
-
-            if (!$eventResult['result_raw'] || $meetName === null || !isset($eligibleMeetNames[$meetName])) {
-                continue;
-            }
-
-            $attendedMeetNames[$meetName] = true;
+        if (isset($attendedMeetNames[$meetName]) || athleteIsEligibleForMeet($athlete, $meetName)) {
+            $eligibleMeetNames[$meetName] = true;
         }
     }
 
@@ -394,7 +424,7 @@ function buildClubSummaries($clubs, $clubsData, $meetEventArray) {
         $clubs[$clubName]['total'] = calcClubAdjustedTotal($clubObj['score'], $clubs[$clubName]['cpf'], $clubs[$clubName]['officials']);
     }
 
-    return sortClubsByAdjustedScore($clubs);
+    return sortClubsByTotalScore($clubs);
 }
 
 function buildAthleteSummaries($athletes, $clubsData, $meetEventArray, $clubFilter) {
@@ -549,6 +579,28 @@ function buildAthleteSummaries($athletes, $clubsData, $meetEventArray, $clubFilt
     ];
 }
 
+function collectUnknownDobAthleteNames($athletes) {
+    $names = [];
+
+    foreach ($athletes as $athlete) {
+        if (($athlete['identity_dob_key'] ?? null) !== 'unknown-dob') {
+            continue;
+        }
+
+        $displayName = trim((string)($athlete['display_name'] ?? ''));
+        if ($displayName === '') {
+            continue;
+        }
+
+        $names[$displayName] = true;
+    }
+
+    $names = array_keys($names);
+    natcasesort($names);
+
+    return array_values($names);
+}
+
 function shouldIgnorePotentialRecord($clubName, $recordSource) {
     if ($recordSource !== 'act-best.csv') {
         return false;
@@ -592,7 +644,7 @@ function scorePotentialRecordAgeSortKey($recordAge) {
     return 0;
 }
 
-function sortClubsByAdjustedScore($clubs) {
+function sortClubsByTotalScore($clubs) {
     uasort($clubs, function ($a, $b) {
         return $b['total'] <=> $a['total'];
     });
@@ -757,8 +809,7 @@ function loadEnv() {
 
 // load meet data from google sheet
 function loadMeetData() {
-    global $sheets;
-
+    $sheets = getSheetsService();
     $response = $sheets->spreadsheets_values->get($_ENV['GOOGLE_SPREADSHEET_ID'], 'Meets');
     $values = $response->getValues();
 
@@ -790,8 +841,7 @@ function loadMeetData() {
 
 // load clubs data from google sheet
 function loadClubData() {
-    global $sheets;
-
+    $sheets = getSheetsService();
     $response = $sheets->spreadsheets_values->get($_ENV['GOOGLE_SPREADSHEET_ID'], 'Clubs');
     $values = $response->getValues();
 

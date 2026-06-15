@@ -48,6 +48,7 @@ $athletes = $summaryData['athletes'];
 $clubs = $summaryData['clubs'];
 $potentialRecords = $summaryData['potential_records'];
 $output = renderAthleteSummaries($summaryData['athlete_summaries']);
+$unknownDobWarnings = collectUnknownDobAthleteNames($athletes);
 
 // Put the highest-scoring athletes at the top of the summary table.
 $athletes = sortAthletesByScore($athletes);
@@ -65,36 +66,16 @@ if ($showPotentialRecords) {
 
 ob_start();
 
-echo '<form method="get" class="view-toggles">';
-foreach ($toggleQueryParams as $key => $value) {
-    if ($value === false || $value === null || $value === '') {
-        continue;
-    }
+echo renderDataWarnings($unknownDobWarnings);
 
-    echo '<input type="hidden" name="' . htmlspecialchars((string)$key, ENT_QUOTES, 'UTF-8') . '" value="' . htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8') . '">';
-}
-echo '<label><input type="checkbox" name="verbose" value="1" onchange="this.form.requestSubmit()" ' . ($verbose ? 'checked' : '') . '> Verbose</label>';
-if ($clubFilter) {
-    echo '<label><input type="checkbox" name="athletes" value="1" checked disabled> Show athlete scores</label>';
-} else {
-    echo '<input type="hidden" name="athletes" value="0" class="toggle-fallback" data-checkbox-name="athletes" data-disable-when-unchecked="0">';
-    echo '<label><input type="checkbox" name="athletes" value="1" onchange="this.form.requestSubmit()" ' . ($showAthletes ? 'checked' : '') . '> Show athlete scores</label>';
-}
-echo '<label><select name="club" onchange="this.form.requestSubmit()" data-empty-means-unset="1">';
-echo '<option value="">All clubs</option>';
-foreach ($clubNames as $clubName) {
-    $selected = $clubFilter === $clubName ? ' selected' : '';
-    echo '<option value="' . htmlspecialchars($clubName, ENT_QUOTES, 'UTF-8') . '"' . $selected . '>' . htmlspecialchars($clubName) . '</option>';
-}
-echo '</select></label>';
-echo '</form>';
+echo renderViewToggles($toggleQueryParams, $verbose, $showAthletes, $clubFilter, $clubNames);
 
 if ($verbose) {
     echo $output;
 }
 
 if ($showAthletes) {
-    echo renderAthleteScoresTable($athletes, $clubFilter, $showAllAthletes);
+    echo renderAthleteScoresTable($athletes, $clubFilter, $showAllAthletes, $toggleQueryParams);
 }
 
 // output club scores

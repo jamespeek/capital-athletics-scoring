@@ -95,6 +95,14 @@ Athletes also have a meet PF used for the club `CPF` calculation:
 * In the full, unfiltered view, the athlete scores table shows the top 20 scored athletes by default and has a `Show all` link underneath.
 * In club-filtered view, athlete scores are always shown and the club scores / potential records sections are hidden.
 
+## Tests
+
+Run the business-logic test suite with:
+
+`php tests/run.php`
+
+The tests use a lightweight native PHP runner in `tests/` and cover athlete identity grouping, DOB normalisation, club-scoped scoring, CPF calculations, and one integration check against the local `data/ss` dataset.
+
 ## Scoring exceptions
 
 The scoring code also includes a few explicit business-rule overrides that sit on top of the general rules:

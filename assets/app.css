@@ -56,6 +56,10 @@
     min-width: 220px;
 }
 
+.data-warnings {
+    margin: 12px 0 16px;
+}
+
 .athlete-meet-summary:not(.has-scored-event) {
     opacity: 0.3;
 }
@@ -79,6 +83,6 @@
     background: gold !important;
 }
 
-.athlete:not(:has(button)) {
+.athlete:not(.has-scored-event) {
     display: none;
 }

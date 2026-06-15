@@ -155,9 +155,22 @@ function renderAthleteSummaries($athleteSummaries) {
     return ob_get_clean();
 }
 
+function athleteSummaryHasScoredEvent($eventSummaries) {
+    foreach ($eventSummaries as $eventSummary) {
+        foreach (($eventSummary['meets'] ?? []) as $meetSummary) {
+            if (($meetSummary['score_data'] ?? null) !== null) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 function renderAthleteSummary($athleteName, $athlete, $eventSummaries, $athleteTotals, $athleteTotal) {
+    $hasScoredEvent = athleteSummaryHasScoredEvent($eventSummaries);
     ob_start();
-    echo '<div class="athlete">';
+    echo '<div class="athlete' . ($hasScoredEvent ? ' has-scored-event' : '') . '">';
     echo '<strong>' . htmlspecialchars($athleteName) . ' (' . htmlspecialchars((string)$athlete['age']) . ')</strong><ul>';
 
     foreach ($eventSummaries as $eventSummary) {
@@ -182,7 +195,42 @@ function renderAthleteSummary($athleteName, $athlete, $eventSummaries, $athleteT
     return ob_get_clean();
 }
 
-function renderAthleteScoresTable($athletes, $clubFilter, $showAllAthletes = false) {
+function renderViewToggles($toggleQueryParams, $verbose, $showAthletes, $clubFilter, $clubNames) {
+    ob_start();
+    echo '<form method="get" class="view-toggles">';
+
+    foreach ($toggleQueryParams as $key => $value) {
+        if ($value === false || $value === null || $value === '') {
+            continue;
+        }
+
+        echo '<input type="hidden" name="' . htmlspecialchars((string)$key, ENT_QUOTES, 'UTF-8') . '" value="' . htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8') . '">';
+    }
+
+    echo '<label><input type="checkbox" name="verbose" value="1" onchange="this.form.requestSubmit()" ' . ($verbose ? 'checked' : '') . '> Verbose</label>';
+
+    if ($clubFilter) {
+        echo '<label><input type="checkbox" name="athletes" value="1" checked disabled> Show athlete scores</label>';
+    } else {
+        echo '<input type="hidden" name="athletes" value="0" class="toggle-fallback" data-checkbox-name="athletes" data-disable-when-unchecked="0">';
+        echo '<label><input type="checkbox" name="athletes" value="1" onchange="this.form.requestSubmit()" ' . ($showAthletes ? 'checked' : '') . '> Show athlete scores</label>';
+    }
+
+    echo '<label><select name="club" onchange="this.form.requestSubmit()" data-empty-means-unset="1">';
+    echo '<option value="">All clubs</option>';
+
+    foreach ($clubNames as $clubName) {
+        $selected = $clubFilter === $clubName ? ' selected' : '';
+        echo '<option value="' . htmlspecialchars($clubName, ENT_QUOTES, 'UTF-8') . '"' . $selected . '>' . htmlspecialchars($clubName) . '</option>';
+    }
+
+    echo '</select></label>';
+    echo '</form>';
+
+    return ob_get_clean();
+}
+
+function renderAthleteScoresTable($athletes, $clubFilter, $showAllAthletes = false, $queryParams = []) {
     $meetPfTooltip = renderTooltipTextTrigger('Meet PF', htmlspecialchars('Athlete meet participation factor: distinct meets attended divided by total meets in the current competition view.', ENT_QUOTES, 'UTF-8'));
     $scoreTooltip = renderTooltipTextTrigger('Score', htmlspecialchars('Total athlete score after combining the counted event scores for this view.', ENT_QUOTES, 'UTF-8'));
     $visibleAthletes = [];
@@ -201,7 +249,6 @@ function renderAthleteScoresTable($athletes, $clubFilter, $showAllAthletes = fal
         $visibleAthletes = array_slice($visibleAthletes, 0, 20, true);
     }
 
-    $queryParams = $_GET;
     $queryParams['all_athletes'] = $showAllAthletes ? '0' : '1';
     $toggleLabel = $showAllAthletes ? 'Show top 20' : 'Show all';
     $toggleHref = '?' . http_build_query($queryParams);
@@ -209,7 +256,7 @@ function renderAthleteScoresTable($athletes, $clubFilter, $showAllAthletes = fal
     ob_start();
     echo '<h2>Athlete scores</h2>';
     echo '<table class="table table-bordered table-striped table-sm">';
-    echo '<tr><th>Name</th>';
+    echo '<tr><th style="width:50px"></th><th>Name</th>';
     if (!$clubFilter) {
         echo '<th>Club</th>';
     }
@@ -217,15 +264,26 @@ function renderAthleteScoresTable($athletes, $clubFilter, $showAllAthletes = fal
     echo '<th style="text-align:right">' . $scoreTooltip . '</th>';
     echo '</tr>';
 
+    $rowIndex = 0;
+    $place = 0;
+    $previousScore = null;
     foreach ($visibleAthletes as $athleteName => $athlete) {
+        $score = (float)$athlete['score'];
+        $rowIndex++;
+        if ($previousScore === null || $score !== $previousScore) {
+            $place = $rowIndex;
+            $previousScore = $score;
+        }
+
         $displayName = $athlete['display_name'] ?? $athleteName;
         echo '<tr>';
+        echo '<td style="text-align:right">' . $place . '</td>';
         echo '<td>' . htmlspecialchars($displayName) . '</td>';
         if (!$clubFilter) {
             echo '<td>' . htmlspecialchars(implode(', ', $athlete['clubs'] ?? [$athlete['club'] ?? ''])) . '</td>';
         }
         echo '<td style="text-align:right">' . number_format((float)($athlete['meet_pf'] ?? 0), 2) . '</td>';
-        echo '<td style="text-align:right">' . number_format($athlete['score']) . '</td>';
+        echo '<td style="text-align:right">' . number_format($score) . '</td>';
         echo '</tr>';
     }
 
@@ -234,6 +292,19 @@ function renderAthleteScoresTable($athletes, $clubFilter, $showAllAthletes = fal
     if ($athleteCount > 20) {
         echo '<p><a href="' . htmlspecialchars($toggleHref, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($toggleLabel) . '</a></p>';
     }
+
+    return ob_get_clean();
+}
+
+function renderDataWarnings($warnings) {
+    if (!$warnings) {
+        return '';
+    }
+
+    ob_start();
+    echo '<div class="alert alert-warning data-warnings" role="alert"><strong>Data warning:</strong> ';
+    echo htmlspecialchars(implode(', ', $warnings));
+    echo ' have an unknown or invalid DOB, so same-name athletes without reliable DOB data may still be merged.</div>';
 
     return ob_get_clean();
 }
@@ -247,7 +318,8 @@ function renderClubScoresTable($clubs) {
     $totalTooltip = renderTooltipTextTrigger('Total', htmlspecialchars('Final club total: Adj + Officials.', ENT_QUOTES, 'UTF-8'));
     echo '<h2>Club scores</h2>';
     echo '<table class="table table-bordered table-striped table-sm">';
-    echo '<tr><th>Club</th>';
+    echo '<tr><th style="width:50px"></th>';
+    echo '<th>Club</th>';
     echo '<th style="width:70px;text-align:right">' . $cpfTooltip . '</th>';
     echo '<th style="width:70px;text-align:right">' . $scoreTooltip . '</th>';
     echo '<th style="width:70px;text-align:right">' . $adjTooltip . '</th>';
@@ -255,16 +327,26 @@ function renderClubScoresTable($clubs) {
     echo '<th style="width:70px;text-align:right">' . $totalTooltip . '</th>';
     echo '</tr>';
 
+    $rowIndex = 0;
+    $place = 0;
+    $previousTotal = null;
     foreach ($clubs as $club => $clubObj) {
         if ((float)$clubObj['score'] === 0.0) continue;
+        $total = (float)$clubObj['total'];
+        $rowIndex++;
+        if ($previousTotal === null || $total !== $previousTotal) {
+            $place = $rowIndex;
+            $previousTotal = $total;
+        }
 
         echo '<tr>';
+        echo '<td style="text-align:right">' . $place . '</td>';
         echo '<td>' . htmlspecialchars($club) . '</td>';
         echo '<td style="text-align:right">' . number_format((float)$clubObj['cpf'], 3) . '</td>';
         echo '<td style="text-align:right">' . number_format($clubObj['score']) . '</td>';
         echo '<td style="text-align:right">' . number_format($clubObj['adj']) . '</td>';
         echo '<td style="text-align:right">' . number_format($clubObj['officials']) . '</td>';
-        echo '<td style="text-align:right">' . number_format($clubObj['total']) . '</td>';
+        echo '<td style="text-align:right">' . number_format($total) . '</td>';
         echo '</tr>';
     }
 

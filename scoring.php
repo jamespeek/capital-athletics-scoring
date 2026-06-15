@@ -274,7 +274,7 @@ function scoreLoadRecords() {
 
     $fh = fopen($file, 'r');
 
-    $headers = fgetcsv($fh);
+    $headers = fgetcsv($fh, null, ',', '"', '\\');
     if (!$headers) {
         return null;
     }
@@ -284,7 +284,7 @@ function scoreLoadRecords() {
     $index = [];
     $ages = [];
 
-    while (($row = fgetcsv($fh)) !== false) {
+    while (($row = fgetcsv($fh, null, ',', '"', '\\')) !== false) {
         if (count($row) < count($headers)) {
             $row = array_pad($row, count($headers), '');
         }
