@@ -1,6 +1,7 @@
 (function () {
     let tooltip = null;
     let selectedPotentialRecordRow = null;
+    let viewTogglesForm = document.querySelector(".view-toggles");
 
     function copyText(text) {
         if (navigator.clipboard && window.isSecureContext) {
@@ -29,7 +30,7 @@
     }
 
     document.addEventListener("click", function (e) {
-        let btn = e.target.closest(".act-score-btn");
+        let btn = e.target.closest(".act-score-btn, .act-tooltip-trigger");
         let potentialRecordRow = e.target.closest(".potential-record-row");
 
         if (btn) {
@@ -95,4 +96,48 @@
             tooltip = null;
         }
     });
+
+    if (viewTogglesForm) {
+        viewTogglesForm.addEventListener("submit", function () {
+            let fallbacks = viewTogglesForm.querySelectorAll(".toggle-fallback");
+            let emptyMeansUnset = viewTogglesForm.querySelectorAll("[data-empty-means-unset]");
+            let clubField = viewTogglesForm.querySelector('select[name="club"]');
+            let athletesFallback = viewTogglesForm.querySelector('input.toggle-fallback[data-checkbox-name="athletes"]');
+            let athletesCheckbox = viewTogglesForm.querySelector('input[type="checkbox"][name="athletes"]');
+
+            fallbacks.forEach(function (fallback) {
+                let checkbox = viewTogglesForm.querySelector('input[type="checkbox"][name="' + fallback.dataset.checkboxName + '"]');
+                if (!checkbox) {
+                    return;
+                }
+
+                if (fallback.dataset.disableWhenUnchecked === "0") {
+                    fallback.disabled = checkbox.checked;
+                    checkbox.disabled = checkbox.checked;
+                    return;
+                }
+
+                fallback.disabled = checkbox.checked;
+            });
+
+            let verboseCheckbox = viewTogglesForm.querySelector('input[type="checkbox"][name="verbose"]');
+            if (verboseCheckbox) {
+                verboseCheckbox.disabled = !verboseCheckbox.checked;
+            }
+
+            if (clubField && clubField.value !== "") {
+                if (athletesFallback) {
+                    athletesFallback.disabled = true;
+                }
+
+                if (athletesCheckbox) {
+                    athletesCheckbox.disabled = true;
+                }
+            }
+
+            emptyMeansUnset.forEach(function (field) {
+                field.disabled = field.value === "";
+            });
+        });
+    }
 })();

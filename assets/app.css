@@ -19,6 +19,12 @@
     height: 100%;
 }
 
+.act-tooltip-trigger {
+    cursor: pointer;
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+}
+
 .act-tooltip {
     position: fixed;
     background: #111;
@@ -31,7 +37,26 @@
     z-index: 9999;
 }
 
-li li:not(:has(button)) {
+.view-toggles {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 12px 0 20px;
+}
+
+.view-toggles label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+}
+
+.view-toggles select {
+    min-width: 220px;
+}
+
+.athlete-meet-summary:not(.has-scored-event) {
     opacity: 0.3;
 }
 

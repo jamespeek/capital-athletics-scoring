@@ -77,9 +77,17 @@ function buildScoreTooltipLines($scoreData) {
 function renderScoreTooltipButton($scoreData) {
     $tooltipText = htmlspecialchars(implode("\n", buildScoreTooltipLines($scoreData)), ENT_QUOTES, 'UTF-8');
 
+    return renderTooltipButton($tooltipText);
+}
+
+function renderTooltipButton($tooltipText) {
     return '<button type="button" class="act-score-btn" data-tip="' . $tooltipText . '">' .
         '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Tabler Icons by Paweł Kuna - https://github.com/tabler/tabler-icons/blob/master/LICENSE --><path fill="currentColor" d="M12 2c5.523 0 10 4.477 10 10a10 10 0 0 1-19.995.324L2 12l.004-.28C2.152 6.327 6.57 2 12 2m0 9h-1l-.117.007a1 1 0 0 0 0 1.986L11 13v3l.007.117a1 1 0 0 0 .876.876L12 17h1l.117-.007a1 1 0 0 0 .876-.876L14 16l-.007-.117a1 1 0 0 0-.764-.857l-.112-.02L13 15v-3l-.007-.117a1 1 0 0 0-.876-.876zm.01-3l-.127.007a1 1 0 0 0 0 1.986L12 10l.127-.007a1 1 0 0 0 0-1.986z"/></svg>' .
         '</button>';
+}
+
+function renderTooltipTextTrigger($label, $tooltipText) {
+    return '<span class="act-tooltip-trigger" data-tip="' . $tooltipText . '">' . htmlspecialchars($label) . '</span>';
 }
 
 function renderMissingRecordBadge() {
@@ -87,8 +95,9 @@ function renderMissingRecordBadge() {
 }
 
 function renderAthleteMeetSummary($meetSummary) {
+    $hasScoredEvent = $meetSummary['score_data'] !== null;
     ob_start();
-    echo '<li>';
+    echo '<li class="athlete-meet-summary' . ($hasScoredEvent ? ' has-scored-event' : '') . '">';
     echo htmlspecialchars($meetSummary['name']) . ': ';
 
     if ($meetSummary['score_data'] !== null) {
@@ -159,14 +168,44 @@ function renderAthleteSummary($athleteName, $athlete, $eventSummaries, $athleteT
 
     if ($athleteTotal) {
         echo '<p>Total: ' . implode(' + ', $athleteTotals);
-        echo ' = ' . number_format($athleteTotal) . ' pts</p>';
+        echo ' = ' . number_format($athleteTotal) . ' pts';
+        echo '<br>Meet PF: ' .
+            htmlspecialchars((string)($athlete['attended_meet_count'] ?? 0)) .
+            ' / ' .
+            htmlspecialchars((string)($athlete['eligible_meet_count'] ?? 0)) .
+            ' = ' .
+            number_format((float)($athlete['meet_pf'] ?? 0), 2);
+        echo '</p>';
     }
 
     echo '</div>';
     return ob_get_clean();
 }
 
-function renderAthleteScoresTable($athletes, $clubFilter) {
+function renderAthleteScoresTable($athletes, $clubFilter, $showAllAthletes = false) {
+    $meetPfTooltip = renderTooltipTextTrigger('Meet PF', htmlspecialchars('Athlete meet participation factor: distinct meets attended divided by total meets in the current competition view.', ENT_QUOTES, 'UTF-8'));
+    $scoreTooltip = renderTooltipTextTrigger('Score', htmlspecialchars('Total athlete score after combining the counted event scores for this view.', ENT_QUOTES, 'UTF-8'));
+    $visibleAthletes = [];
+
+    foreach ($athletes as $athleteName => $athlete) {
+        if ((float)$athlete['score'] === 0.0) {
+            continue;
+        }
+
+        $visibleAthletes[$athleteName] = $athlete;
+    }
+
+    $athleteCount = count($visibleAthletes);
+
+    if (!$showAllAthletes) {
+        $visibleAthletes = array_slice($visibleAthletes, 0, 20, true);
+    }
+
+    $queryParams = $_GET;
+    $queryParams['all_athletes'] = $showAllAthletes ? '0' : '1';
+    $toggleLabel = $showAllAthletes ? 'Show top 20' : 'Show all';
+    $toggleHref = '?' . http_build_query($queryParams);
+
     ob_start();
     echo '<h2>Athlete scores</h2>';
     echo '<table class="table table-bordered table-striped table-sm">';
@@ -174,36 +213,46 @@ function renderAthleteScoresTable($athletes, $clubFilter) {
     if (!$clubFilter) {
         echo '<th>Club</th>';
     }
-    echo '<th style="text-align:right">Score</th>';
+    echo '<th style="text-align:right">' . $meetPfTooltip . '</th>';
+    echo '<th style="text-align:right">' . $scoreTooltip . '</th>';
     echo '</tr>';
 
-    foreach ($athletes as $athleteName => $athlete) {
-        if ((float)$athlete['score'] === 0.0) continue;
-
+    foreach ($visibleAthletes as $athleteName => $athlete) {
+        $displayName = $athlete['display_name'] ?? $athleteName;
         echo '<tr>';
-        echo '<td>' . htmlspecialchars($athleteName) . '</td>';
+        echo '<td>' . htmlspecialchars($displayName) . '</td>';
         if (!$clubFilter) {
-            echo '<td>' . htmlspecialchars($athlete['club']) . '</td>';
+            echo '<td>' . htmlspecialchars(implode(', ', $athlete['clubs'] ?? [$athlete['club'] ?? ''])) . '</td>';
         }
+        echo '<td style="text-align:right">' . number_format((float)($athlete['meet_pf'] ?? 0), 2) . '</td>';
         echo '<td style="text-align:right">' . number_format($athlete['score']) . '</td>';
         echo '</tr>';
     }
 
     echo '</table>';
+
+    if ($athleteCount > 20) {
+        echo '<p><a href="' . htmlspecialchars($toggleHref, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($toggleLabel) . '</a></p>';
+    }
+
     return ob_get_clean();
 }
 
 function renderClubScoresTable($clubs) {
     ob_start();
+    $cpfTooltip = renderTooltipTextTrigger('CPF', htmlspecialchars('Average athlete meet PF for the club: distinct meets attended divided by total meets, averaged across the club\'s athletes.', ENT_QUOTES, 'UTF-8'));
+    $scoreTooltip = renderTooltipTextTrigger('Score', htmlspecialchars('Sum of the included athlete scores for the club.', ENT_QUOTES, 'UTF-8'));
+    $adjTooltip = renderTooltipTextTrigger('Adj', htmlspecialchars('Club adjusted score before officials: Score × CPF.', ENT_QUOTES, 'UTF-8'));
+    $officialsTooltip = renderTooltipTextTrigger('Officials', htmlspecialchars('Officials bonus: 20 points for each official recorded for each meet.', ENT_QUOTES, 'UTF-8'));
+    $totalTooltip = renderTooltipTextTrigger('Total', htmlspecialchars('Final club total: Adj + Officials.', ENT_QUOTES, 'UTF-8'));
     echo '<h2>Club scores</h2>';
     echo '<table class="table table-bordered table-striped table-sm">';
     echo '<tr><th>Club</th>';
-    echo '<th style="width:70px;text-align:right">Size</th>';
-    echo '<th style="width:70px;text-align:right">#</th>';
-    echo '<th style="width:70px;text-align:right">CPF</th>';
-    echo '<th style="width:70px;text-align:right">Score</th>';
-    echo '<th style="width:70px;text-align:right">Officials</th>';
-    echo '<th style="width:70px;text-align:right">Adj</th>';
+    echo '<th style="width:70px;text-align:right">' . $cpfTooltip . '</th>';
+    echo '<th style="width:70px;text-align:right">' . $scoreTooltip . '</th>';
+    echo '<th style="width:70px;text-align:right">' . $adjTooltip . '</th>';
+    echo '<th style="width:70px;text-align:right">' . $officialsTooltip . '</th>';
+    echo '<th style="width:70px;text-align:right">' . $totalTooltip . '</th>';
     echo '</tr>';
 
     foreach ($clubs as $club => $clubObj) {
@@ -211,12 +260,11 @@ function renderClubScoresTable($clubs) {
 
         echo '<tr>';
         echo '<td>' . htmlspecialchars($club) . '</td>';
-        echo '<td style="text-align:right">' . htmlspecialchars((string)$clubObj['size']) . '</td>';
-        echo '<td style="text-align:right">' . count($clubObj['athletes']) . '</td>';
-        echo '<td style="text-align:right">' . htmlspecialchars((string)$clubObj['cpf']) . '</td>';
+        echo '<td style="text-align:right">' . number_format((float)$clubObj['cpf'], 3) . '</td>';
         echo '<td style="text-align:right">' . number_format($clubObj['score']) . '</td>';
-        echo '<td style="text-align:right">' . number_format($clubObj['officials']) . '</td>';
         echo '<td style="text-align:right">' . number_format($clubObj['adj']) . '</td>';
+        echo '<td style="text-align:right">' . number_format($clubObj['officials']) . '</td>';
+        echo '<td style="text-align:right">' . number_format($clubObj['total']) . '</td>';
         echo '</tr>';
     }
 

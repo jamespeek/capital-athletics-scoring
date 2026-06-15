@@ -41,8 +41,11 @@ For champs files, keep the numeric prefix for sort order and suffix the file wit
 ## Optional URL parameters
 
 * `comp` Defaults to `ss`. It must match a directory inside `data`.
-* `verbose` Defaults to `true`. Use it to show the per-athlete working as well as the summary tables.
+* `verbose` Defaults to `false`. Use it to show the per-athlete working as well as the summary tables.
+* `athletes` Defaults to `true`. Use `athletes=false` to hide the athlete scores table in the full, unfiltered view.
+* `all_athletes` Defaults to `false`. Use `all_athletes=true` to expand the athlete scores table beyond the default top 20 rows.
 * `club` Defaults to `none`. Use it to filter results down to a single club, for example `Woden Athletics`.
+* `records` Defaults to `false`. Use `records=true` to show the potential records table in the full, unfiltered view.
  
 ## Scoring overview
 
@@ -71,12 +74,26 @@ Athlete totals are then calculated:
 
 Club totals are built from the summed athlete totals and then adjusted using:
 
-* club participation factor: athletes entered divided by club size
+* `CPF old`: athletes entered divided by club size
+* `CPF`: the average club-specific athlete meet PF for the club
 * officials bonus: `20` points for each official recorded for each meet
 
-The final club adjusted score is:
+The club score columns are:
 
-`club athlete total * participation factor + officials bonus`
+* `Adj`: `club athlete total * CPF`
+* `Total`: `Adj + officials bonus`
+
+Athletes also have a meet PF used for the club `CPF` calculation:
+
+* meet PF: distinct meets attended divided by the total meets in the current competition view
+* this meet PF is separate from the existing event-level PF used in athlete scoring
+* athletes are grouped by display name plus a normalised DOB key, with ambiguous swapped month/day DOBs treated as the same identity
+
+## UI behaviour
+
+* The top control row lets users toggle `Verbose`, toggle `Show athlete scores`, and filter to a single club.
+* In the full, unfiltered view, the athlete scores table shows the top 20 scored athletes by default and has a `Show all` link underneath.
+* In club-filtered view, athlete scores are always shown and the club scores / potential records sections are hidden.
 
 ## Scoring exceptions
 

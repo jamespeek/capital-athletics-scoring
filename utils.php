@@ -53,6 +53,7 @@ function appConfig() {
             'Bega Valley Little Athletics C' => 'Bega Valley Little Athletics',
             'North Canberra-Gungahlin' => 'North Canberra-Gungahlin Athletics',
             'Cooma Athletics Incorporated' => 'Cooma Athletics',
+            'Goulburn-Mulwaree' => 'Goulburn-Mulwaree Athletics'
         ],
     ];
 
@@ -95,6 +96,7 @@ function getData($filename, $comp) {
             'lastname' => normalisePersonNamePart(preg_replace('/\s+[T0-9\(\)-]+/', '', $rawLastName)),
             'firstname' => normalisePersonNamePart($row[23]),
             'gender' => $row[25],
+            'dob_raw' => trim((string)$row[26]),
             'dob' => strtotime($row[26]),
             'age' => (int)$row[29],
             'club' => normaliseClubName($row[28]),
@@ -236,15 +238,55 @@ function groupResultsByAthlete($resultData) {
     $athletes = [];
 
     foreach ($resultData as $row) {
-        $key = $row['firstname'] . ' ' . $row['lastname'];
+        $displayName = trim($row['firstname'] . ' ' . $row['lastname']);
+        $dobKey = buildAthleteDobIdentityKey($row['dob_raw'] ?? null, $row['dob'] ?? null);
+        $key = implode('|', [$displayName, $dobKey]);
 
         $athletes[$key]['events'][$row['event']][] = $row;
-        $athletes[$key]['club'] = $row['club'];
+        $athletes[$key]['display_name'] = $displayName;
+        $athletes[$key]['identity_dob_key'] = $dobKey;
         $athletes[$key]['age'] = $row['age'];
+        $athletes[$key]['dob'] = $row['dob'] ?? null;
+        $athletes[$key]['dob_raw_values'][$row['dob_raw'] ?? ''] = true;
+        $athletes[$key]['clubs'][$row['club']] = true;
         $athletes[$key]['is_para'] = $row['is_para'];
     }
 
+    foreach ($athletes as $key => $athlete) {
+        $clubNames = array_keys($athlete['clubs'] ?? []);
+        natcasesort($clubNames);
+        $athletes[$key]['clubs'] = array_values($clubNames);
+        $athletes[$key]['club'] = $athletes[$key]['clubs'][0] ?? '';
+        $athletes[$key]['dob_raw_values'] = array_values(array_filter(array_keys($athlete['dob_raw_values'] ?? [])));
+    }
+
     return $athletes;
+}
+
+function buildAthleteDobIdentityKey($dobRaw, $dobTimestamp = null) {
+    $dobRaw = trim((string)$dobRaw);
+
+    if (preg_match('/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/', $dobRaw, $matches)) {
+        $first = (int)$matches[1];
+        $second = (int)$matches[2];
+        $year = (int)$matches[3];
+
+        if ($first >= 1 && $first <= 12 && $second >= 1 && $second <= 12) {
+            $low = min($first, $second);
+            $high = max($first, $second);
+            return sprintf('%04d-%02d-%02d-amb', $year, $low, $high);
+        }
+    }
+
+    if ($dobTimestamp) {
+        return date('Y-m-d', (int)$dobTimestamp);
+    }
+
+    if ($dobRaw !== '') {
+        return $dobRaw;
+    }
+
+    return 'unknown-dob';
 }
 
 function sortAthletesByScore($athletes) {
@@ -253,6 +295,85 @@ function sortAthletesByScore($athletes) {
     });
 
     return $athletes;
+}
+
+function buildAthleteMeetParticipationData($athlete, $meetEventArray) {
+    $eligibleMeetNames = [];
+
+    foreach ($meetEventArray as $meet) {
+        $meetName = $meet['name'] ?? null;
+
+        if ($meetName === null) {
+            continue;
+        }
+
+        $eligibleMeetNames[$meetName] = true;
+    }
+
+    $attendedMeetNames = [];
+
+    foreach ($athlete['events'] as $eventResults) {
+        foreach ($eventResults as $eventResult) {
+            $meetName = $eventResult['meet'] ?? null;
+
+            if (!$eventResult['result_raw'] || $meetName === null || !isset($eligibleMeetNames[$meetName])) {
+                continue;
+            }
+
+            $attendedMeetNames[$meetName] = true;
+        }
+    }
+
+    $eligibleMeetCount = count($eligibleMeetNames);
+    $attendedMeetCount = count($attendedMeetNames);
+    $meetPf = $eligibleMeetCount > 0 ? $attendedMeetCount / $eligibleMeetCount : 0;
+
+    return [
+        'attended_meet_count' => $attendedMeetCount,
+        'eligible_meet_count' => $eligibleMeetCount,
+        'meet_pf' => $meetPf,
+    ];
+}
+
+function buildAthleteScoreBreakdown($athlete, $meetEventArray, $clubFilteredView = false) {
+    $eventSummaries = [];
+    $athleteTotals = [];
+
+    foreach ($athlete['events'] as $eventName => $eventResults) {
+        $eventSummary = buildAthleteEventSummary($athlete, $eventName, $eventResults, $meetEventArray);
+        $eventSummaries[] = $eventSummary;
+        $athleteTotals[] = $eventSummary['final_score'];
+    }
+
+    if (!$clubFilteredView) {
+        rsort($athleteTotals);
+        $athleteTotals = array_slice($athleteTotals, 0, 4);
+    }
+
+    return [
+        'event_summaries' => $eventSummaries,
+        'totals' => $athleteTotals,
+        'total' => array_sum($athleteTotals),
+    ];
+}
+
+function buildClubScopedAthlete($athlete, $clubName) {
+    $clubAthlete = $athlete;
+    $clubAthlete['events'] = [];
+    $clubAthlete['clubs'] = [$clubName];
+    $clubAthlete['club'] = $clubName;
+
+    foreach ($athlete['events'] as $eventName => $eventResults) {
+        $clubEventResults = array_values(array_filter($eventResults, function ($eventResult) use ($clubName) {
+            return (($eventResult['club'] ?? null) === $clubName);
+        }));
+
+        if ($clubEventResults) {
+            $clubAthlete['events'][$eventName] = $clubEventResults;
+        }
+    }
+
+    return $clubAthlete;
 }
 
 function buildClubSummaries($clubs, $clubsData, $meetEventArray) {
@@ -267,8 +388,10 @@ function buildClubSummaries($clubs, $clubsData, $meetEventArray) {
             $clubs[$clubName]['officials'] += $officialCount * $officialPoints;
         }
 
-        $clubs[$clubName]['cpf'] = calcClubParticipationFactor(count($clubObj['athletes']), $clubs[$clubName]['size']);
-        $clubs[$clubName]['adj'] = calcClubAdjustedTotal($clubObj['score'], $clubs[$clubName]['cpf'], $clubs[$clubName]['officials']);
+        $clubs[$clubName]['cpf_old'] = calcClubParticipationFactor(count($clubObj['athletes']), $clubs[$clubName]['size']);
+        $clubs[$clubName]['cpf'] = calcAverageAthleteMeetParticipationFactor($clubObj['athletes']);
+        $clubs[$clubName]['adj'] = calcClubScoreAdjustment($clubObj['score'], $clubs[$clubName]['cpf']);
+        $clubs[$clubName]['total'] = calcClubAdjustedTotal($clubObj['score'], $clubs[$clubName]['cpf'], $clubs[$clubName]['officials']);
     }
 
     return sortClubsByAdjustedScore($clubs);
@@ -279,14 +402,27 @@ function buildAthleteSummaries($athletes, $clubsData, $meetEventArray, $clubFilt
     $clubs = [];
     $potentialRecords = [];
 
-    foreach ($athletes as $athleteName => $athlete) {
-        $eventSummaries = [];
-        $athleteTotals = [];
+    foreach ($athletes as $athleteKey => $athlete) {
+        $athleteName = $athlete['display_name'] ?? $athleteKey;
+        $meetParticipation = buildAthleteMeetParticipationData($athlete, $meetEventArray);
+        $scoreBreakdown = buildAthleteScoreBreakdown($athlete, $meetEventArray, $clubFilter);
+        $eventSummaries = $scoreBreakdown['event_summaries'];
+        $athleteTotals = $scoreBreakdown['totals'];
+        $athleteTotal = $scoreBreakdown['total'];
 
         foreach ($athlete['events'] as $eventName => $eventResults) {
-            $eventSummary = buildAthleteEventSummary($athlete, $eventName, $eventResults, $meetEventArray);
-            $eventSummaries[] = $eventSummary;
-            $athleteTotals[] = $eventSummary['final_score'];
+            $eventSummary = null;
+
+            foreach ($eventSummaries as $candidateSummary) {
+                if (($candidateSummary['event'] ?? null) === $eventName) {
+                    $eventSummary = $candidateSummary;
+                    break;
+                }
+            }
+
+            if ($eventSummary === null) {
+                continue;
+            }
 
             foreach ($eventSummary['meets'] as $meetSummary) {
                 $scoreData = $meetSummary['score_data'] ?? null;
@@ -300,10 +436,6 @@ function buildAthleteSummaries($athletes, $clubsData, $meetEventArray, $clubFilt
                     continue;
                 }
 
-                if (shouldIgnorePotentialRecord($athlete['club'], $scoreData['meta']['record']['source'] ?? null)) {
-                    continue;
-                }
-
                 foreach ($eventResults as $eventResult) {
                     if (($eventResult['meet'] ?? null) === $meetSummary['name']) {
                         $matchedEventResult = $eventResult;
@@ -311,11 +443,17 @@ function buildAthleteSummaries($athletes, $clubsData, $meetEventArray, $clubFilt
                     }
                 }
 
+                $matchedClub = $matchedEventResult['club'] ?? ($athlete['clubs'][0] ?? '');
+
+                if (shouldIgnorePotentialRecord($matchedClub, $scoreData['meta']['record']['source'] ?? null)) {
+                    continue;
+                }
+
                 $potentialRecords[] = [
                     'athlete' => $athleteName,
                     'age' => $athlete['age'],
                     'gender' => $matchedEventResult['gender'] ?? $eventResults[0]['gender'] ?? null,
-                    'club' => $athlete['club'],
+                    'club' => $matchedClub,
                     'event' => $eventName,
                     'meet' => $meetSummary['name'],
                     'meet_date' => $matchedEventResult['meet_date'] ?? null,
@@ -332,35 +470,46 @@ function buildAthleteSummaries($athletes, $clubsData, $meetEventArray, $clubFilt
             }
         }
 
-        if (!$clubFilter) {
-            rsort($athleteTotals);
-            $athleteTotals = array_slice($athleteTotals, 0, 4);
-        }
-
-        $athleteTotal = array_sum($athleteTotals);
-
-        $athletes[$athleteName]['score'] = $athleteTotal;
+        $athletes[$athleteKey]['score'] = $athleteTotal;
+        $athletes[$athleteKey]['attended_meet_count'] = $meetParticipation['attended_meet_count'];
+        $athletes[$athleteKey]['eligible_meet_count'] = $meetParticipation['eligible_meet_count'];
+        $athletes[$athleteKey]['meet_pf'] = $meetParticipation['meet_pf'];
         $athleteSummaries[] = [
             'name' => $athleteName,
-            'athlete' => $athlete,
+            'athlete' => $athletes[$athleteKey],
             'event_summaries' => $eventSummaries,
             'totals' => $athleteTotals,
             'total' => $athleteTotal,
         ];
 
-        if (!isset($clubsData[$athletes[$athleteName]['club']])) {
-            continue;
-        }
+        foreach ($athlete['clubs'] as $athleteClub) {
+            if (!isset($clubsData[$athleteClub])) {
+                continue;
+            }
 
-        if (!isset($clubs[$athletes[$athleteName]['club']])) {
-            $clubs[$athletes[$athleteName]['club']] = [
-                'score' => 0,
-                'athletes' => [],
-            ];
-        }
+            $clubAthlete = buildClubScopedAthlete($athletes[$athleteKey], $athleteClub);
+            if (empty($clubAthlete['events'])) {
+                continue;
+            }
 
-        $clubs[$athletes[$athleteName]['club']]['score'] += $athleteTotal;
-        $clubs[$athletes[$athleteName]['club']]['athletes'][] = $athleteName;
+            $clubScoreBreakdown = buildAthleteScoreBreakdown($clubAthlete, $meetEventArray, false);
+            $clubMeetParticipation = buildAthleteMeetParticipationData($clubAthlete, $meetEventArray);
+
+            if (!isset($clubs[$athleteClub])) {
+                $clubs[$athleteClub] = [
+                    'score' => 0,
+                    'athletes' => [],
+                ];
+            }
+
+            $clubAthlete['score'] = $clubScoreBreakdown['total'];
+            $clubAthlete['attended_meet_count'] = $clubMeetParticipation['attended_meet_count'];
+            $clubAthlete['eligible_meet_count'] = $clubMeetParticipation['eligible_meet_count'];
+            $clubAthlete['meet_pf'] = $clubMeetParticipation['meet_pf'];
+
+            $clubs[$athleteClub]['score'] += $clubScoreBreakdown['total'];
+            $clubs[$athleteClub]['athletes'][] = $clubAthlete;
+        }
     }
 
     usort($potentialRecords, function ($a, $b) {
@@ -445,7 +594,7 @@ function scorePotentialRecordAgeSortKey($recordAge) {
 
 function sortClubsByAdjustedScore($clubs) {
     uasort($clubs, function ($a, $b) {
-        return $b['adj'] <=> $a['adj'];
+        return $b['total'] <=> $a['total'];
     });
 
     return $clubs;
@@ -560,14 +709,34 @@ function parseMeetResultData($result_str) {
 
 function calcClubParticipationFactor($athletes, $size) {
     if ($size <= 0) {
-        return number_format(0, 3);
+        return 0.0;
     }
 
-    return number_format($athletes / $size, 3);
+    return $athletes / $size;
+}
+
+function calcAverageAthleteMeetParticipationFactor($athletes) {
+    $athleteCount = count($athletes);
+
+    if ($athleteCount <= 0) {
+        return 0.0;
+    }
+
+    $meetPfTotal = 0;
+
+    foreach ($athletes as $athlete) {
+        $meetPfTotal += (float)($athlete['meet_pf'] ?? 0);
+    }
+
+    return $meetPfTotal / $athleteCount;
+}
+
+function calcClubScoreAdjustment($score, $cpf) {
+    return $score * $cpf;
 }
 
 function calcClubAdjustedTotal($score, $cpf, $officials) {
-    return $score * $cpf + $officials;
+    return calcClubScoreAdjustment($score, $cpf) + $officials;
 }
 
 function loadEnv() {
